@@ -1,0 +1,16 @@
+﻿source_email,relationship_type,target_email
+example100007@hmc.edu,like,example100041@students.claremontmckenna.edu
+example100358@hmc.edu,friend,example100007@hmc.edu
+example100063@mymail.pomona.edu,like,example100382@mymail.pomona.edu
+example100041@students.claremontmckenna.edu,friend,example100383@students.claremontmckenna.edu
+example100166@scrippscollege.edu,like,example100381@scrippscollege.edu
+example100381@scrippscollege.edu,like,example100166@scrippscollege.edu
+example100380@students.pitzer.edu,friend,example100063@mymail.pomona.edu
+example100291@scrippscollege.edu,friend,example100166@scrippscollege.edu
+example100383@students.claremontmckenna.edu,like,example100007@hmc.edu
+example100382@mymail.pomona.edu,friend,example100291@scrippscollege.edu
+example100383@students.claremontmckenna.edu,like,example100041@students.claremontmckenna.edu
+example100358@hmc.edu,like,example100380@students.pitzer.edu
+example100063@mymail.pomona.edu,friend,example100383@students.claremontmckenna.edu
+example100007@hmc.edu,like,example100063@mymail.pomona.edu
+example100022@students.pitzer.edu,like,example100383@students.claremontmckenna.edu
