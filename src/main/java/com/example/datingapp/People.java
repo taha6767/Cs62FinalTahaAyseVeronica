@@ -5,11 +5,21 @@ import java.util.ArrayList;
  * simple class to represent a person in our dating app holds their info and mbti stats
  * @author Taha
  */
+
+/**
+ * New Features:
+ * - Popularity tracking
+ * 
+ * @author Veronica
+ */
 public class People {
     private String name;
     private String email;
     private String mbtiRaw; // Stores "ENFP", "ISTJ", etc. needed for reference
     private int validLikes = 0;
+
+    // NEW: how many people like this person
+    private int likedByCount = 0;
 
     // Tracks compatibility: What this person *likes* in others
     // E(-1)/I(+1), N(-1)/S(+1), T(-1)/F(+1), P(-1)/J(+1)
@@ -109,6 +119,15 @@ public class People {
     public ArrayList<Integer> getMbtiStats() { return mbtiStats; }
     public ArrayList<Integer> getMbtiSelfType() { return mbtiSelfType; }
     public int getValidLikes() {return validLikes;}
+
+    // NEW METHODS:
+    public void incrementLikedByCount() {
+        likedByCount++;
+    }
+
+    public int getLikedByCount() {
+        return likedByCount;
+    }
     
     /**
      * accessor for the list of people this person likes
