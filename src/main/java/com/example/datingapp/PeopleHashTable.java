@@ -453,7 +453,7 @@ public class PeopleHashTable {
 
     /**
      * Helper Method for Autocomplete:
-     * Returns true if the prefix matches any token in the name
+     * Returns true if the prefix matches any substring in the name
      */
 
     private boolean matchesNameToken(String fullName, String prefix){
@@ -461,7 +461,7 @@ public class PeopleHashTable {
         String[] tokens = fullName.toLowerCase().split(" ");
 
         for(String token : tokens){
-            if(token.startsWith(normPrefix)){
+            if(token.contains(normPrefix)){
                 return true;
             }
         }

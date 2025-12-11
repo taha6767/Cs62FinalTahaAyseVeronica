@@ -3,6 +3,13 @@ package com.example.datingapp;
  * this class is just for testing the backend logic without running the whole website
  * @author Taha
  */
+
+/**
+ * New Features:
+ * - Tested Autocomplete (popularity-ranked)
+ * @author Veronica
+ */
+
 public class Main {
     /**
      * standard main method to run the manual test
@@ -31,5 +38,24 @@ public class Main {
         } else {
             System.out.println("No mutual match found in the current database.");
         }
+
+        // Test Popularity tracking (likedByCount)
+        System.out.println("\n--- Testing popularity tracking ---");
+        for(People p:database.getAllPeople()){
+            System.out.println(p.getName() + " | Email: " + p.getEmail()
+                    + " | Liked By Count = " + p.getLikedByCount());
+        }
+        
+        // Test substring-based name matching + autocomplete
+        System.out.println("\n---Testing Autocomplete (popularity ranked)---");
+        String[] testPrefixes = {"a", "li", "jo", "mi"};
+        for(String prefix: testPrefixes){
+            System.out.println("\nAutocomplete for prefix: \"" + prefix +"\"");
+
+            for(People p : database.autocompleteByPopularity(prefix)){
+                System.out.println(" -> " + p.getName() + " | Popularity =" + p.getLikedByCount());
+            }
+        }
+
     }
 }
