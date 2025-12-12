@@ -87,7 +87,13 @@
     <div class="section">
         <h2>3. Interact</h2>
         <p>Perform an action as the <b>logged-in user</b>.</p>
-        <input type="text" id="targetEmail" placeholder="Enter target email to Like or Friend">
+        <input type="text" id="targetSearchInput" 
+        placeholder="Type a name or email to Like or Friend" 
+        oninput="handleTargetAutocomplete()">
+
+        <!-- Autocomplete suggestions appear here -->
+        <div id="targetAutocompleteList" class="autocomplete-list"></div>
+
         <div style="display: flex; gap: 10px;">
             <button onclick="interact('like')" class="btn-pink">Like ❤️</button>
             <button onclick="interact('friend')" class="btn-cyan">Friend 🤝</button>
@@ -155,6 +161,7 @@
                     <th>Email</th>
                     <th>MBTI</th>
                     <th>Popularity (Liked By)</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -239,7 +246,7 @@
     async function interact(type) {
         if (!currentUser) return alert("Please login first using Section 1!");
 
-        const target = document.getElementById('targetEmail').value.trim();
+        const target = document.getElementById('targetSearchInput').value.trim();
         if (!target) return alert("Please enter a target email.");
 
         const data = { sourceEmail: currentUser, targetEmail: target, type: type };
@@ -263,6 +270,41 @@
             alert("Interaction failed.");
         }
     }
+
+    async function quickInteract(targetEmail, type) {
+    if (!currentUser) {
+        alert("Please login first!");
+        return;
+    }
+    // prevent self-like
+    if (targetEmail === currentUser) {
+        alert("You cannot interact with yourself.");
+        return;
+    }
+
+    // reuse same backend call as interact()
+    const data = { sourceEmail: currentUser, targetEmail: targetEmail, type: type };
+
+    try {
+        const response = await fetch(API_URL + "/interact", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        const resData = await response.json();
+
+        if (resData.status === "success") {
+            alert(resData.message);
+            refreshTable();
+            loadMyLists();
+        } else {
+            alert("Error: " + resData.message);
+        }
+    } catch (e) {
+        console.error(e);
+        alert("Interaction failed.");
+    }
+}
 
     async function findMatch() {
         if (!currentUser) return alert("Please login first!");
@@ -405,18 +447,29 @@
 
             let html = "";
             suggestions.forEach(user => {
+                const safeEmail = (user.email || "").replace(/'/g, "\\'");
                 const safeName = (user.name || "").replace(/'/g, "\\'");
                 const pop = (typeof user.likedByCount === "number") ? user.likedByCount : 0;
 
                 html += `
-                    <div class="autocomplete-item" onclick="fillSearchFromSuggestion('${safeName}')">
-                        <div class="autocomplete-name">${user.name}</div>
-                        <div class="autocomplete-meta">
-                            ${user.email}
-                            ${user.mbti ? " | MBTI: " + user.mbti : ""}
-                            | Popularity: ${pop}
+                    <div class="autocomplete-item">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                            <div onclick="fillSearchFromSuggestion('${safeName}')"
+                                style="flex:1; cursor:pointer;">
+                            <div class="autocomplete-name">${user.name}</div>
+                            <div class="autocomplete-meta">
+                                ${user.email} ${user.mbti ? " | MBTI: " + user.mbti : ""} | Popularity: ${pop}
+                            </div>
                         </div>
+
+                        <div style="display:flex; gap:6px;">
+                        <button class="btn-pink" style="width:auto; padding:8px 10px; font-size:13px;"
+                            onclick="quickInteract('${safeEmail}','like')">Like ❤️</button>
+                        <button class="btn-cyan" style="width:auto; padding:8px 10px; font-size:13px;"
+                            onclick="quickInteract('${safeEmail}','friend')">Friend 🤝</button>
+                         </div>
                     </div>
+                 </div>
                 `;
             });
             listDiv.innerHTML = html;
@@ -470,6 +523,14 @@
                         <td>${user.email}</td>
                         <td>${user.mbti}</td>
                         <td>${pop}</td>
+                        <td>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn-pink" style="width:auto; padding:8px 10px; font-size:13px;"
+                                    onclick="quickInteract('${safeEmail}','like')">Like ❤️</button>
+                                <button class="btn-cyan" style="width:auto; padding:8px 10px; font-size:13px;"
+                                    onclick="quickInteract('${safeEmail}','friend')">Friend 🤝</button>
+                            </div>
+                        </td>
                     </tr>
                 `;
                 tbody.innerHTML += row;
@@ -481,6 +542,54 @@
             alert("Error running search.");
         }
     }
+
+    // =========================
+    // TARGET AUTOCOMPLETE (LIKE / FRIEND)
+    // =========================
+
+async function handleTargetAutocomplete() {
+    const input = document.getElementById('targetSearchInput').value.trim();
+    const listDiv = document.getElementById('targetAutocompleteList');
+
+    if (!input) {
+        listDiv.innerHTML = "";
+        return;
+    }
+
+    try {
+        const resp = await fetch(API_URL + "/autocomplete?prefix=" + encodeURIComponent(input));
+        const suggestions = await resp.json();
+
+        if (!Array.isArray(suggestions) || suggestions.length === 0) {
+            listDiv.innerHTML = "";
+            return;
+        }
+
+        let html = "";
+        suggestions.forEach(user => {
+            html += `
+                <div class="autocomplete-item"
+                     onclick="selectTargetUser('${user.email}', '${user.name.replace(/'/g, "\\'")}')">
+                    <div class="autocomplete-name">${user.name}</div>
+                    <div class="autocomplete-meta">
+                        ${user.email} | ${user.mbti || "NA"}
+                    </div>
+                </div>
+            `;
+        });
+
+        listDiv.innerHTML = html;
+    } catch (e) {
+        console.error("Target autocomplete error:", e);
+        listDiv.innerHTML = "";
+    }
+}
+
+// When clicking a suggestion, autofill the email
+function selectTargetUser(email, name) {
+    document.getElementById('targetSearchInput').value = email;
+    document.getElementById('targetAutocompleteList').innerHTML = "";
+}
 
     // initial load
     refreshTable();
