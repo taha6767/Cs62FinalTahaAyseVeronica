@@ -281,42 +281,42 @@ public class PeopleHashTable implements MatchDatabase {
      */
     public void loadRelationships(String filename) {
         String line;
+    
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             br.readLine(); // Skip header
+    
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
-                if(data.length < 3) continue;
-
+                if (data.length < 3) continue;
+    
                 String sourceEmail = data[0].trim();
                 String type = data[1].trim().toLowerCase();
                 String targetEmail = data[2].trim();
-
-                //Find both people in the hash table
+    
+                // Find both people
                 People sourcePerson = this.get(sourceEmail);
                 People targetPerson = this.get(targetEmail);
-
-                //If either doesn't exist, skip this relationship
+    
+                // Skip invalid rows
                 if (sourcePerson == null || targetPerson == null) continue;
-
-                // Update lists based on relationship type
-                if (type.equals("friend")) {
-                    sourcePerson.addFriendEmail(targetEmail);
-                } 
-                else if (type.equals("like")) {
-                    sourcePerson.addLikedEmail(targetEmail);
-                    
-                    //If Source likes Target, update Source's stats based on Target's MBTI type.
-                    String targetMbti = targetPerson.getMbtiRaw();
-                    sourcePerson.updateMbtiStats(targetMbti);
-
-                    // NEW: Target gets +1 popularity because someone liked them
-                    targetPerson.incrementLikedByCount();
+    
+                // Use LikeMatcher so matches are handled correctly
+                LikeMatcher matcher = new LikeMatcher(sourcePerson);
+    
+                if (type.equals("like")) {
+                    matcher.RomanticLiker(targetPerson);
+                    targetPerson.incrementLikedByCount(); // keep popularity consistent
+                }
+                else if (type.equals("friend")) {
+                    matcher.FriendLiker(targetPerson);
                 }
             }
+    
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    
     /**
      * Visualization of the Hash Table
      * Shows

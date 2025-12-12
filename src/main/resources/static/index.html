@@ -9,12 +9,10 @@
         h1 { text-align: center; color: #444; }
         h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; color: #555; }
         .section { margin-bottom: 30px; padding: 20px; border: 1px solid #eee; border-radius: 8px; background-color: #fff; }
-        
-        /* Form Elements */
+
         label { font-weight: bold; margin-top: 10px; display: block; }
         input, select { padding: 10px; margin: 8px 0 15px 0; width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        
-        /* Buttons */
+
         button { padding: 12px; border: none; border-radius: 5px; width: 100%; cursor: pointer; font-size: 16px; transition: opacity 0.2s; }
         button:hover { opacity: 0.9; }
         .btn-green { background-color: #28a745; color: white; }
@@ -23,17 +21,14 @@
         .btn-cyan { background-color: #17a2b8; color: white; }
         .btn-yellow { background-color: #ffc107; color: black; font-weight: bold; }
 
-        /* Table Styling */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; vertical-align: top; }
         th { background-color: #f8f9fa; font-weight: bold; }
         tr:nth-child(even) { background-color: #f9f9f9; }
-        
-        /* Status Text */
+
         #currentUserDisplay { color: #007bff; font-weight: bold; font-size: 1.1em; }
         .status-msg { margin-top: 10px; font-weight: bold; }
 
-        /* Autocomplete + Searching Styling */
         .autocomplete-list {
             margin-top: 5px;
             border: 1px solid #ddd;
@@ -49,22 +44,11 @@
             border-bottom: 1px solid #f1f1f1;
         }
 
-        .autocomplete-item:last-child {
-            border-bottom: none;
-        }
+        .autocomplete-item:last-child { border-bottom: none; }
+        .autocomplete-item:hover { background-color: #f0f8ff; }
 
-        .autocomplete-item:hover {
-            background-color: #f0f8ff;
-        }
-
-        .autocomplete-name {
-            font-weight: 600;
-        }
-
-        .autocomplete-meta {
-            font-size: 12px;
-            color: #777;
-        }
+        .autocomplete-name { font-weight: 600; }
+        .autocomplete-meta { font-size: 12px; color: #777; }
     </style>
 </head>
 <body>
@@ -85,6 +69,18 @@
         <input type="text" id="newName" placeholder="Full Name">
         <input type="text" id="newEmail" placeholder="Email">
         <input type="text" id="newMbti" placeholder="MBTI (e.g., ENFP)">
+
+        <label for="newGender">Gender</label>
+        <select id="newGender">
+            <option value="">Prefer not to say</option>
+            <option value="woman">Woman</option>
+            <option value="man">Man</option>
+            <option value="nonbinary">Non-binary</option>
+        </select>
+
+        <label for="newGenderPrefs">Dating preference (comma-separated genders)</label>
+        <input type="text" id="newGenderPrefs" placeholder="e.g., woman, nonbinary">
+
         <button onclick="createUser()" class="btn-green">Add User to Hash Table</button>
     </div>
 
@@ -105,33 +101,60 @@
     </div>
 
     <div class="section">
-        <h2>5. Search Users by Name (Autocomplete + MBTI Search)</h2>
+        <h2>5. My Lists</h2>
+        <p>
+            You can only see your own outgoing likes/friendlikes and your matches.
+            Matched people appear only in matches (backend behavior).
+        </p>
+        <button onclick="loadMyLists()" class="btn-blue" style="margin-bottom: 10px;">🔄 Refresh My Lists</button>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px;">
+                <h3 style="margin: 0 0 8px 0; color: #e83e8c;">❤️ People I Liked (not matched)</h3>
+                <ul id="myLikesList" style="margin: 0; padding-left: 18px;"></ul>
+            </div>
+
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px;">
+                <h3 style="margin: 0 0 8px 0; color: #17a2b8;">🤝 People I Friend-Liked (not matched)</h3>
+                <ul id="myFriendLikesList" style="margin: 0; padding-left: 18px;"></ul>
+            </div>
+
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px;">
+                <h3 style="margin: 0 0 8px 0; color: #28a745;">💘 Matches (mutual likes)</h3>
+                <ul id="myMatchesList" style="margin: 0; padding-left: 18px;"></ul>
+            </div>
+
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px;">
+                <h3 style="margin: 0 0 8px 0; color: #6c757d;">🧩 Friend Matches (mutual friend-likes)</h3>
+                <ul id="myFriendMatchesList" style="margin: 0; padding-left: 18px;"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>6. Search Users by Name (Autocomplete + MBTI Search)</h2>
         <p>Start typing a name to see live suggestions, then run a full search ranked by compatibility.</p>
 
-        <!-- Autocomplete input -->
-        <input 
-            type="text" 
-            id="searchNameInput" 
+        <input
+            type="text"
+            id="searchNameInput"
             placeholder="Start typing a name (e.g., Ana, Li, Jo...)"
             oninput="handleNameTyping()"
         >
 
-        <!-- Live suggestions appear here -->
         <div id="autocompleteList" class="autocomplete-list"></div>
 
-        <!-- Run full search -->
         <button onclick="runSearch()" class="btn-blue" style="margin-top: 10px;">
             🔍 Search with MBTI Ranking
         </button>
 
-        <!-- Search results table -->
         <table id="searchResultsTable" style="margin-top: 15px; display: none;">
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
                     <th>MBTI</th>
-                    <th>Popularity (Likes)</th>
+                    <th>Popularity (Liked By)</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -139,7 +162,7 @@
     </div>
 
     <div class="section">
-        <h2>6. Database Visualization</h2>
+        <h2>7. Database Visualization</h2>
         <button onclick="refreshTable()" class="btn-blue" style="margin-bottom: 10px;">🔄 Refresh Table</button>
         <table id="dataTable">
             <thead>
@@ -152,20 +175,18 @@
                     <th>Friend Emails</th>
                 </tr>
             </thead>
-            <tbody>
-                </tbody>
+            <tbody></tbody>
         </table>
     </div>
 </div>
 
 <script>
     let currentUser = "";
-    const API_URL = "http://localhost:8080/api";
+    const API_URL = window.location.origin + "/api";
 
-    // 1. LOGIN FUNCTION
     async function login() {
         const emailInput = document.getElementById('loginEmail').value.trim();
-        if(!emailInput) return alert("Please enter an email.");
+        if (!emailInput) return alert("Please enter an email.");
 
         try {
             const response = await fetch(API_URL + "/login", {
@@ -180,6 +201,9 @@
                 document.getElementById('currentUserDisplay').innerText = currentUser;
                 document.getElementById('currentUserDisplay').style.color = "green";
                 alert("Login Successful: Welcome " + data.user.name);
+
+                loadMyLists();
+                refreshTable();
             } else {
                 alert("Login Failed: " + data.message);
             }
@@ -189,12 +213,13 @@
         }
     }
 
-    // 2. CREATE USER FUNCTION
     async function createUser() {
         const data = {
             name: document.getElementById('newName').value,
             email: document.getElementById('newEmail').value,
-            mbti: document.getElementById('newMbti').value
+            mbti: document.getElementById('newMbti').value,
+            gender: document.getElementById('newGender').value,
+            genderPrefs: document.getElementById('newGenderPrefs').value
         };
 
         try {
@@ -205,24 +230,19 @@
             });
             const resData = await response.json();
             alert(resData.message);
-            refreshTable(); // Auto-refresh table
+            refreshTable();
         } catch (e) {
             alert("Error creating user");
         }
     }
 
-    // 3. INTERACT FUNCTION
     async function interact(type) {
         if (!currentUser) return alert("Please login first using Section 1!");
-        
-        const target = document.getElementById('targetEmail').value.trim();
-        if(!target) return alert("Please enter a target email.");
 
-        const data = {
-            sourceEmail: currentUser,
-            targetEmail: target,
-            type: type
-        };
+        const target = document.getElementById('targetEmail').value.trim();
+        if (!target) return alert("Please enter a target email.");
+
+        const data = { sourceEmail: currentUser, targetEmail: target, type: type };
 
         try {
             const response = await fetch(API_URL + "/interact", {
@@ -231,10 +251,11 @@
                 body: JSON.stringify(data)
             });
             const resData = await response.json();
-            
-            if(resData.status === "success") {
+
+            if (resData.status === "success") {
                 alert(resData.message);
-                refreshTable(); // Update table to show new relationship
+                refreshTable();
+                loadMyLists();
             } else {
                 alert("Error: " + resData.message);
             }
@@ -243,14 +264,12 @@
         }
     }
 
-    // 4. MATCH FUNCTION
     async function findMatch() {
         if (!currentUser) return alert("Please login first!");
-        
+
         try {
-            const response = await fetch(API_URL + "/match?email=" + currentUser);
-            // Handle if no match returned (200 OK but empty body)
-            const text = await response.text(); 
+            const response = await fetch(API_URL + "/match?email=" + encodeURIComponent(currentUser));
+            const text = await response.text();
             const resultDiv = document.getElementById('matchResult');
 
             if (!text) {
@@ -262,40 +281,102 @@
             const match = JSON.parse(text);
             resultDiv.innerHTML = `MATCH FOUND: <br> <b>${match.name}</b> (${match.mbti}) <br> ${match.email}`;
             resultDiv.style.color = "green";
-
         } catch (e) {
             console.error(e);
             alert("Error finding match.");
         }
     }
 
+    async function loadMyLists() {
+        const likesEl = document.getElementById('myLikesList');
+        const friendLikesEl = document.getElementById('myFriendLikesList');
+        const matchesEl = document.getElementById('myMatchesList');
+        const friendMatchesEl = document.getElementById('myFriendMatchesList');
 
-    // 5. REFRESH TABLE FUNCTION (The Visualization)
+        likesEl.innerHTML = "";
+        friendLikesEl.innerHTML = "";
+        matchesEl.innerHTML = "";
+        friendMatchesEl.innerHTML = "";
+
+        if (!currentUser) {
+            const msg = "<li><span style='color:#999'>Login to view your lists.</span></li>";
+            likesEl.innerHTML = msg;
+            friendLikesEl.innerHTML = msg;
+            matchesEl.innerHTML = msg;
+            friendMatchesEl.innerHTML = msg;
+            return;
+        }
+
+        try {
+            const resp = await fetch(API_URL + "/lists?email=" + encodeURIComponent(currentUser));
+            const data = await resp.json();
+
+            if (data.status !== "success") {
+                const err = `<li><span style='color:#c00'>${data.message || "Error loading lists"}</span></li>`;
+                likesEl.innerHTML = err;
+                friendLikesEl.innerHTML = err;
+                matchesEl.innerHTML = err;
+                friendMatchesEl.innerHTML = err;
+                return;
+            }
+
+            renderPeopleList(likesEl, data.liked);
+            renderPeopleList(friendLikesEl, data.friendLiked);
+            renderPeopleList(matchesEl, data.matches);
+            renderPeopleList(friendMatchesEl, data.friendMatches);
+        } catch (e) {
+            console.error(e);
+            const err = "<li><span style='color:#c00'>Error loading lists</span></li>";
+            likesEl.innerHTML = err;
+            friendLikesEl.innerHTML = err;
+            matchesEl.innerHTML = err;
+            friendMatchesEl.innerHTML = err;
+        }
+    }
+
+    function renderPeopleList(ulEl, list) {
+        ulEl.innerHTML = "";
+        if (!list || list.length === 0) {
+            ulEl.innerHTML = "<li><span style='color:#999'>None</span></li>";
+            return;
+        }
+        list.forEach(p => {
+            const mbti = p.mbti ? ` (${p.mbti})` : "";
+            const li = document.createElement('li');
+            li.textContent = `${p.name}${mbti} — ${p.email}`;
+            ulEl.appendChild(li);
+        });
+    }
+
     async function refreshTable() {
         try {
-            const response = await fetch(API_URL + "/table");
+            const url = currentUser
+                ? (API_URL + "/table?viewerEmail=" + encodeURIComponent(currentUser))
+                : (API_URL + "/table");
+
+            const response = await fetch(url);
             const data = await response.json();
             const tbody = document.querySelector("#dataTable tbody");
-            tbody.innerHTML = ""; // Clear existing rows
+            tbody.innerHTML = "";
 
             data.forEach(user => {
-                // Formatting arrays for display
-                // If list is empty, show "None", otherwise join with comma
-                const likes = (user.likedEmails && user.likedEmails.length > 0) 
-                              ? user.likedEmails.join(', ') 
-                              : '<span style="color:#ccc">None</span>';
-                
-                const friends = (user.friendEmails && user.friendEmails.length > 0) 
-                                ? user.friendEmails.join(', ') 
-                                : '<span style="color:#ccc">None</span>';
+                const isMe = currentUser && user.email === currentUser;
+
+                const likes = isMe
+                    ? ((user.likedEmails && user.likedEmails.length > 0) ? user.likedEmails.join(', ') : '<span style="color:#ccc">None</span>')
+                    : '<span style="color:#ccc">Private</span>';
+
+                const friends = isMe
+                    ? ((user.friendEmails && user.friendEmails.length > 0) ? user.friendEmails.join(', ') : '<span style="color:#ccc">None</span>')
+                    : '<span style="color:#ccc">Private</span>';
 
                 const row = `<tr>
                     <td>${user.name}</td>
                     <td>${user.email}</td>
                     <td>${user.mbti}</td>
-                    <td>[${user.stats.join(', ')}]</td>
-                    <td>${likes}</td>   
-                    <td>${friends}</td> 
+                    <td>[${(user.stats || []).join(', ')}]</td>
+                    <td>${likes}</td>
+                    <td>${friends}</td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
@@ -304,24 +385,16 @@
         }
     }
 
-    // Auto-load table on page open
-    refreshTable();
-
-    // 6. AUTOCOMPLETE + SEARCH
-
-    // Called on every key press in the name search box
     async function handleNameTyping() {
         const input = document.getElementById('searchNameInput').value.trim();
         const listDiv = document.getElementById('autocompleteList');
 
-    // Clear if empty
-    if (!input) {
+        if (!input) {
             listDiv.innerHTML = "";
             return;
         }
 
         try {
-            // GET /api/autocomplete?prefix=...
             const resp = await fetch(API_URL + "/autocomplete?prefix=" + encodeURIComponent(input));
             const suggestions = await resp.json();
 
@@ -330,15 +403,18 @@
                 return;
             }
 
-            // Render suggestions
             let html = "";
             suggestions.forEach(user => {
+                const safeName = (user.name || "").replace(/'/g, "\\'");
+                const pop = (typeof user.likedByCount === "number") ? user.likedByCount : 0;
+
                 html += `
-                    <div class="autocomplete-item" onclick="fillSearchFromSuggestion('${user.name.replace(/'/g, "\\'")}')">
+                    <div class="autocomplete-item" onclick="fillSearchFromSuggestion('${safeName}')">
                         <div class="autocomplete-name">${user.name}</div>
                         <div class="autocomplete-meta">
-                            ${user.email} 
-                            ${user.mbti ? " | MBTI: " + user.mbti : ""} 
+                            ${user.email}
+                            ${user.mbti ? " | MBTI: " + user.mbti : ""}
+                            | Popularity: ${pop}
                         </div>
                     </div>
                 `;
@@ -348,15 +424,13 @@
             console.error("Autocomplete error:", e);
             listDiv.innerHTML = "<div class='autocomplete-item'><span class='autocomplete-meta'>Error loading suggestions</span></div>";
         }
-
-    // When you click on a suggestion, fill the input box with that name
+    }
 
     function fillSearchFromSuggestion(name) {
         document.getElementById('searchNameInput').value = name;
         document.getElementById('autocompleteList').innerHTML = "";
     }
 
-    // Full search using MBTI-based ranking on the backend
     async function runSearch() {
         if (!currentUser) {
             alert("Please login first (Section 1) so we know who is searching.");
@@ -370,11 +444,10 @@
         }
 
         try {
-            // GET /api/search?email=<currentUser>&name=<query>
             const resp = await fetch(
-                API_URL + "/search?email=" 
-                + encodeURIComponent(currentUser) 
-                + "&name=" 
+                API_URL + "/search?email="
+                + encodeURIComponent(currentUser)
+                + "&name="
                 + encodeURIComponent(query)
             );
             const results = await resp.json();
@@ -390,12 +463,13 @@
             }
 
             results.forEach(user => {
+                const pop = (typeof user.likedByCount === "number") ? user.likedByCount : 0;
                 const row = `
                     <tr>
                         <td>${user.name}</td>
                         <td>${user.email}</td>
                         <td>${user.mbti}</td>
-                        <td>${user.likedEmails ? user.likedEmails.length : 0}</td>
+                        <td>${pop}</td>
                     </tr>
                 `;
                 tbody.innerHTML += row;
@@ -407,12 +481,10 @@
             alert("Error running search.");
         }
     }
-    }
 
-
-
-
-
+    // initial load
+    refreshTable();
+    loadMyLists();
 </script>
 
 </body>
