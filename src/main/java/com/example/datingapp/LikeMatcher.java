@@ -71,7 +71,7 @@ public class LikeMatcher {
      * @param p the person you liked 
      * @param b to decide for searching a romantic or a friendship match
      */
-    public boolean isMatch(People p, boolean b){
+    private boolean isMatch(People p, boolean b){
         
         if(b){
             for(String email : p.getLikedEmails()){
