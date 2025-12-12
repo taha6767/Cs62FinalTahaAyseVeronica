@@ -233,6 +233,29 @@ public class People {
         return genderPreferences;
     }
 
+    /**
+     * checks if the genders are compatible
+     * @return whether the gender is compatible
+     */
+    public boolean isGenderCompatibleWith(People other) {
+        if (other == null) return false;
+        if (genderPreferences == null || genderPreferences.isEmpty()) {
+            // if nothing stored, treat as "no restriction"
+            return true;
+        }
+        String otherGender = other.getGender();
+        if (otherGender == null) return false;
+        return genderPreferences.contains(otherGender.toLowerCase());
+    }
+
+    /**
+     * checks if the gender is mutually compatible
+     * @return boolean of whether they are mutually compatible
+     */
+    public boolean isMutuallyRomanticallyCompatible(People other) {
+        return this.isGenderCompatibleWith(other) && other.isGenderCompatibleWith(this);
+    }
+
 
     @Override
     public String toString() {
