@@ -250,6 +250,18 @@ public class PeopleHashTable {
                 String email = data[3].trim();
                 String mbti = (data.length > 4) ? data[4].trim() : "NA";
 
+                String gender = (data.length > 5) ? data[5].trim() : "unspecified";
+                // join the rest back together
+                String prefsRaw = "";
+                if (data.length > 6) {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 6; i < data.length; i++) {
+                        if (i > 6) sb.append(",");
+                        sb.append(data[i]);
+                    }
+                    prefsRaw = sb.toString();
+}
+
                 People p = new People(fullName, email);
                 
                 //Calculate and store the person's own type vector
@@ -393,6 +405,11 @@ public class PeopleHashTable {
             }
             // ------------------------------
 
+            //if the genders are not compatible, dont suggest them
+            if (!seeker.isMutuallyRomanticallyCompatible(candidate)) {
+                continue;
+            }
+
             //Statistical compatibility check (The 33% Rule)
             if (isCompatible(seeker, candidate) && isCompatible(candidate, seeker)) {
                 return candidate; // Match found, you guys deserve love!
@@ -435,6 +452,29 @@ public class PeopleHashTable {
             }
         }
         return true;
+    }
+
+    /**
+     * checks if the genders are compatible
+     * @return whether the gender is caompatible
+     */
+    public boolean isGenderCompatibleWith(People other) {
+        if (other == null) return false;
+        if (genderPreferences == null || genderPreferences.isEmpty()) {
+            // if nothing stored, treat as "no restriction"
+            return true;
+        }
+        String otherGender = other.getGender();
+        if (otherGender == null) return false;
+        return genderPreferences.contains(otherGender.toLowerCase());
+    }
+
+    /**
+     * checks if the gender is mutually compatible
+     * @return boolean of whether they are mutually compatible
+     */
+    public boolean isMutuallyRomanticallyCompatible(People other) {
+        return this.isGenderCompatibleWith(other) && other.isGenderCompatibleWith(this);
     }
     
     /**
@@ -525,9 +565,15 @@ public class PeopleHashTable {
             String name = p.getName();
             if(name == null) continue;
 
+            //only show people with prefered gender
+            if (!currentUser.isMutuallyRomanticallyCompatible(p)) {
+                continue;
+            }
+            
+
             if(matchesNameToken(name, normalized)){
                 double mbtiScore = computeMbtiMatchScorePlaceholder(currentUser, p);
-                int popularity = p.getLikedByCount()candidates.add(new SearchCandidate(p, mbtiScore, popularity));
+                int popularity = p.getLikedByCount().candidates.add(new SearchCandidate(p, mbtiScore, popularity));
 
         
             }

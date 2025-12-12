@@ -81,6 +81,8 @@ public class WebController {
     public Map<String, Object> registerUser(@RequestBody RegistrationRequest request) {
         People newPerson = new People(request.name, request.email);
         newPerson.setMbtiSelfType(request.mbti);
+        newPerson.setGender(request.gender);
+        newPerson.setGenderPreferencesFromString(request.genderPrefs);
         database.insert(newPerson);
 
         Map<String, Object> response = new HashMap<>();
@@ -143,6 +145,8 @@ public class WebController {
         public List<Integer> stats; 
         public List<String> likedEmails;   
         public List<String> friendEmails; 
+        public String gender;
+        public List<String> genderPreferences;
 
         /**
          * constructor that copies data from the real person object to this simple display object
@@ -153,6 +157,8 @@ public class WebController {
             this.email = p.getEmail();
             this.mbti = p.getMbtiRaw();
             this.stats = p.getMbtiStats(); 
+            this.gender = p.getGender();
+            this.genderPreferences = p.getGenderPreferences();
             
             // Map the arrays from People.java to the JSON response
             this.likedEmails = p.getLikedEmails();
@@ -167,6 +173,8 @@ public class WebController {
         public String name;
         public String email;
         public String mbti;
+        public String gender;       // e.g. "women"
+        public String genderPrefs;
     }
 
     /**

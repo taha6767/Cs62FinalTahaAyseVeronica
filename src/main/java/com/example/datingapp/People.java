@@ -17,6 +17,9 @@ public class People {
     private String email;
     private String mbtiRaw; // Stores "ENFP", "ISTJ", etc. needed for reference
     private int validLikes = 0;
+    private String gender; // e.g. "men", "women", "non-binary"
+    private ArrayList<String> genderPreferences; // romantic preferences
+    
 
     // NEW: how many people like this person
     private int likedByCount = 0;
@@ -62,6 +65,9 @@ public class People {
 
         this.likeMatches = new ArrayList<>();
         this.friendMatches = new ArrayList<>();
+
+        this.gender = "unspecified";
+        this.genderPreferences = new ArrayList<>();
     }
 
     /**
@@ -180,6 +186,51 @@ public class People {
      */
     public ArrayList<String> getFriendEmails() {
         return friendEmails;
+    }
+
+    /**
+     * set gender as a lower case string
+     * @parameter gender as a string
+     */
+    public void setGender(String gender) {
+        if (gender == null || gender.isEmpty()) {
+            this.gender = "unspecified";
+        } else {
+            this.gender = gender.toLowerCase();
+        }
+    }
+    
+    /**
+     * dating preferences are given as a string. extracts and adds the prefered genders
+     * @parameter raw as a string of prefered genders
+     */
+    public void setGenderPreferencesFromString(String raw) {
+        genderPreferences.clear();
+        if (raw == null) return;
+    
+        // split on commas and trim
+        String[] parts = raw.replace("\"", "").toLowerCase().split("\\s*,\\s*");
+        for (String p : parts) {
+            if (!p.isEmpty()) {
+                genderPreferences.add(p);
+            }
+        }
+    }
+    
+    /**
+     * accessor for gender
+     * @return the gender
+     */
+    public String getGender() {
+        return gender;
+    }
+    
+    /**
+     * accessor for the list of gender preferences
+     * @return the arraylist of prefered genders
+     */
+    public ArrayList<String> getGenderPreferences() {
+        return genderPreferences;
     }
 
 
