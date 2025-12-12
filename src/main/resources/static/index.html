@@ -32,6 +32,39 @@
         /* Status Text */
         #currentUserDisplay { color: #007bff; font-weight: bold; font-size: 1.1em; }
         .status-msg { margin-top: 10px; font-weight: bold; }
+
+        /* Autocomplete + Searching Styling */
+        .autocomplete-list {
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 180px;
+            overflow-y: auto;
+            background-color: #fff;
+        }
+
+        .autocomplete-item {
+            padding: 8px 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover {
+            background-color: #f0f8ff;
+        }
+
+        .autocomplete-name {
+            font-weight: 600;
+        }
+
+        .autocomplete-meta {
+            font-size: 12px;
+            color: #777;
+        }
     </style>
 </head>
 <body>
@@ -72,7 +105,41 @@
     </div>
 
     <div class="section">
-        <h2>5. Database Visualization</h2>
+        <h2>5. Search Users by Name (Autocomplete + MBTI Search)</h2>
+        <p>Start typing a name to see live suggestions, then run a full search ranked by compatibility.</p>
+
+        <!-- Autocomplete input -->
+        <input 
+            type="text" 
+            id="searchNameInput" 
+            placeholder="Start typing a name (e.g., Ana, Li, Jo...)"
+            oninput="handleNameTyping()"
+        >
+
+        <!-- Live suggestions appear here -->
+        <div id="autocompleteList" class="autocomplete-list"></div>
+
+        <!-- Run full search -->
+        <button onclick="runSearch()" class="btn-blue" style="margin-top: 10px;">
+            🔍 Search with MBTI Ranking
+        </button>
+
+        <!-- Search results table -->
+        <table id="searchResultsTable" style="margin-top: 15px; display: none;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>MBTI</th>
+                    <th>Popularity (Likes)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>6. Database Visualization</h2>
         <button onclick="refreshTable()" class="btn-blue" style="margin-bottom: 10px;">🔄 Refresh Table</button>
         <table id="dataTable">
             <thead>
@@ -202,6 +269,7 @@
         }
     }
 
+
     // 5. REFRESH TABLE FUNCTION (The Visualization)
     async function refreshTable() {
         try {
@@ -238,6 +306,113 @@
 
     // Auto-load table on page open
     refreshTable();
+
+    // 6. AUTOCOMPLETE + SEARCH
+
+    // Called on every key press in the name search box
+    async function handleNameTyping() {
+        const input = document.getElementById('searchNameInput').value.trim();
+        const listDiv = document.getElementById('autocompleteList');
+
+    // Clear if empty
+    if (!input) {
+            listDiv.innerHTML = "";
+            return;
+        }
+
+        try {
+            // GET /api/autocomplete?prefix=...
+            const resp = await fetch(API_URL + "/autocomplete?prefix=" + encodeURIComponent(input));
+            const suggestions = await resp.json();
+
+            if (!Array.isArray(suggestions) || suggestions.length === 0) {
+                listDiv.innerHTML = "<div class='autocomplete-item'><span class='autocomplete-meta'>No suggestions</span></div>";
+                return;
+            }
+
+            // Render suggestions
+            let html = "";
+            suggestions.forEach(user => {
+                html += `
+                    <div class="autocomplete-item" onclick="fillSearchFromSuggestion('${user.name.replace(/'/g, "\\'")}')">
+                        <div class="autocomplete-name">${user.name}</div>
+                        <div class="autocomplete-meta">
+                            ${user.email} 
+                            ${user.mbti ? " | MBTI: " + user.mbti : ""} 
+                        </div>
+                    </div>
+                `;
+            });
+            listDiv.innerHTML = html;
+        } catch (e) {
+            console.error("Autocomplete error:", e);
+            listDiv.innerHTML = "<div class='autocomplete-item'><span class='autocomplete-meta'>Error loading suggestions</span></div>";
+        }
+
+    // When you click on a suggestion, fill the input box with that name
+
+    function fillSearchFromSuggestion(name) {
+        document.getElementById('searchNameInput').value = name;
+        document.getElementById('autocompleteList').innerHTML = "";
+    }
+
+    // Full search using MBTI-based ranking on the backend
+    async function runSearch() {
+        if (!currentUser) {
+            alert("Please login first (Section 1) so we know who is searching.");
+            return;
+        }
+
+        const query = document.getElementById('searchNameInput').value.trim();
+        if (!query) {
+            alert("Please type a name or partial name to search.");
+            return;
+        }
+
+        try {
+            // GET /api/search?email=<currentUser>&name=<query>
+            const resp = await fetch(
+                API_URL + "/search?email=" 
+                + encodeURIComponent(currentUser) 
+                + "&name=" 
+                + encodeURIComponent(query)
+            );
+            const results = await resp.json();
+
+            const table = document.getElementById('searchResultsTable');
+            const tbody = table.querySelector('tbody');
+            tbody.innerHTML = "";
+
+            if (!Array.isArray(results) || results.length === 0) {
+                table.style.display = "none";
+                alert("No results found for that name.");
+                return;
+            }
+
+            results.forEach(user => {
+                const row = `
+                    <tr>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.mbti}</td>
+                        <td>${user.likedEmails ? user.likedEmails.length : 0}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            table.style.display = "table";
+        } catch (e) {
+            console.error("Search error:", e);
+            alert("Error running search.");
+        }
+    }
+    }
+
+
+
+
+
 </script>
 
 </body>
