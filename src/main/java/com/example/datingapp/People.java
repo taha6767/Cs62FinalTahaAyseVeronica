@@ -19,8 +19,15 @@ public class People {
     // Logic: E(+1)/I(-1), S(+1)/N(-1), F(+1)/T(-1), J(+1)/P(-1)
     private ArrayList<Integer> mbtiSelfType; 
 
+
+    //tracks the people the person has liked/friended
     private ArrayList<String> likedEmails;
     private ArrayList<String> friendEmails;
+
+    //tracks the matches made by mutual likes
+    private ArrayList<String> likeMatches;
+    private ArrayList<String> friendMatches;
+
 
     /**
      * creates a new person with just their name and email starts with empty stats
@@ -42,6 +49,9 @@ public class People {
         
         this.likedEmails = new ArrayList<>();
         this.friendEmails = new ArrayList<>();
+
+        this.likeMatches = new ArrayList<>();
+        this.friendMatches = new ArrayList<>();
     }
 
     /**
@@ -103,6 +113,17 @@ public class People {
      */
     public void addFriendEmail(String email) { this.friendEmails.add(email); }
 
+     /**
+     * adds an email to the list of people you matched via liking
+     * @param email the email to add
+     */
+     public void addLikedEmailMatch(String email) { this.likeMatches.add(email); }
+     /**
+      * adds an email to the list of people you matched as friends
+      * @param email the email to add
+      */
+     public void addFriendEmailMatch(String email) { this.friendMatches.add(email); }
+
     public String getEmail() { return email; }
     public String getName() { return name; }
     public String getMbtiRaw() { return mbtiRaw; } // Necessary for relationship processing
@@ -122,9 +143,27 @@ public class People {
      * accessor for the list of friends this person has
      * @return the arraylist of friend emails
      */
+    public ArrayList<String> getFriendEmailsMatch() {
+        return friendMatches;
+    }
+
+     /**
+     * accessor for the list of people this person likes
+     * @return the arraylist of emails
+     */
+     public ArrayList<String> getLikedEmailsMatch() {
+        return likeMatches;
+    }
+    
+    /**
+     * accessor for the list of friends this person has
+     * @return the arraylist of friend emails
+     */
     public ArrayList<String> getFriendEmails() {
         return friendEmails;
     }
+
+
     @Override
     public String toString() {
         return name + " (" + mbtiRaw + ") | SelfScore: " + mbtiSelfType + " | PrefScore: " + mbtiStats;
