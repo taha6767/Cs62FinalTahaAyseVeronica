@@ -13,12 +13,13 @@ import java.util.ArrayList;
  * New Features:
  * - Token-based name matching for autocomplete and search
  * - Autocomplete suggestions ranked by popularity
+ * - Helper Method for calculating MBTI matching score
  * - Final search results ranked by MBTI compatibility
  * 
  * This class now handles both autocomplete and search as well.
  * @author Veronica
  */
-public class PeopleHashTable {
+public class PeopleHashTable implements MatchDatabase {
 
     // Internal class to handle Lazy Deletion
     private static class HashEntry {
@@ -456,7 +457,7 @@ public class PeopleHashTable {
 
     /**
      * checks if the genders are compatible
-     * @return whether the gender is caompatible
+     * @return whether the gender is compatible
      */
     public boolean isGenderCompatibleWith(People other) {
         if (other == null) return false;
@@ -540,6 +541,50 @@ public class PeopleHashTable {
     }
 
     /**
+     * Helper function: Calculate MBTI matching score
+     * Uses same logic as isCompatible, but returns a numeric score in [0,1]
+     */
+
+    private double computeMbtiMatchScore(People judge, People subject) {
+        int totalValid = judge.getValidLikes();
+    
+        // If no valid data points, judge has no strong prefs yet → neutral
+        if (totalValid == 0) {
+            return 0.5;
+        }
+    
+        ArrayList<Integer> judgePrefs = judge.getMbtiStats();
+        ArrayList<Integer> subjectType = subject.getMbtiSelfType();
+    
+        double scoreSum = 0.0;
+    
+        for (int k = 0; k < 4; k++) {
+            double prefScore = judgePrefs.get(k);
+            double ratio = prefScore / totalValid;  // same ratio logic
+            int subjectTrait = subjectType.get(k); 
+    
+            if (ratio > 0.33) {
+                // Judge strongly prefers +1 here
+                if (subjectTrait == 1) {
+                    scoreSum += 1.0;   // matched strong preference
+                } // else +0 (mismatch)
+            } else if (ratio < -0.33) {
+                // Judge strongly prefers -1 here
+                if (subjectTrait == -1) {
+                    scoreSum += 1.0;   // matched strong preference
+                } // else +0 (mismatch)
+            } else {
+                // Judge is neutral on this dimension → give partial credit
+                scoreSum += 0.5;
+            }
+        }
+    
+        // Normalize to [0, 1]
+        return scoreSum / 4.0;
+    }
+
+
+    /**
      * Full search:
      * Given the current user's email and a name query (which might still be partial)
      * find all matching users and rank them by MBTI compatibility score
@@ -570,10 +615,12 @@ public class PeopleHashTable {
                 continue;
             }
             
+            boolean ok = isCompatible(currentUser, p) && isCompatible(p, currentUser)
 
             if(matchesNameToken(name, normalized)){
-                double mbtiScore = computeMbtiMatchScorePlaceholder(currentUser, p);
-                int popularity = p.getLikedByCount().candidates.add(new SearchCandidate(p, mbtiScore, popularity));
+                double mbtiScore = computeMbtiMatchScore(currentUser, p);
+                int popularity = p.getLikedByCount();
+                candidates.add(new SearchCandidate(p, mbtiScore, popularity));
 
         
             }

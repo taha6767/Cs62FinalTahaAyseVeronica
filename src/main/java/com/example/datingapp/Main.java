@@ -7,6 +7,7 @@ package com.example.datingapp;
 /**
  * New Features:
  * - Tested Autocomplete (popularity-ranked)
+ * - Tested Searching (MBTI-ranked)
  * @author Veronica
  */
 
@@ -57,5 +58,24 @@ public class Main {
             }
         }
 
+        //Test MBTI-ranked searching
+        System.out.println("\n--- Testing SEARCH (MBTI-ranked) ---");
+
+        String seekerEmail2 = "example100063@mymail.pomona.edu";
+
+        String[] searchQueries = {"a", "li", "jo", "mi"};
+
+        for (String query : searchQueries) {
+            System.out.println("\nSearch for name: \"" + query + "\" from user " + seekerEmail);
+
+            for (People p : database.searchByNameRankedByMbti(query, seekerEmail2)) {
+                System.out.println("  -> " + p.getName()
+                    + " | MBTI: " + p.getMbtiRaw()
+                    + " | Popularity = " + p.getLikedByCount());
+        }
     }
+
+    }
+
+
 }
