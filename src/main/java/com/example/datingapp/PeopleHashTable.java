@@ -8,6 +8,16 @@ import java.util.ArrayList;
  * this class so far handles the hash table logic for storing people and finding matches based on compatibility
  * @author Taha
  */
+
+/**
+ * New Features:
+ * - Token-based name matching for autocomplete and search
+ * - Autocomplete suggestions ranked by popularity
+ * - Final search results ranked by MBTI compatibility
+ * 
+ * This class now handles both autocomplete and search as well.
+ * @author Veronica
+ */
 public class PeopleHashTable {
 
     // Internal class to handle Lazy Deletion
@@ -285,6 +295,9 @@ public class PeopleHashTable {
                     //If Source likes Target, update Source's stats based on Target's MBTI type.
                     String targetMbti = targetPerson.getMbtiRaw();
                     sourcePerson.updateMbtiStats(targetMbti);
+
+                    // NEW: Target gets +1 popularity because someone liked them
+                    targetPerson.incrementLikedByCount();
                 }
             }
         } catch (IOException e) {
@@ -437,4 +450,114 @@ public class PeopleHashTable {
     }
     return activeList;
     }
+
+    /**
+     * Helper Method for Autocomplete:
+     * Returns true if the prefix matches any substring in the name
+     */
+
+    private boolean matchesNameToken(String fullName, String prefix){
+        String normPrefix = prefix.toLowerCase();
+        String[] tokens = fullName.toLowerCase().split(" ");
+
+        for(String token : tokens){
+            if(token.contains(normPrefix)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Autocomplete suggestions:
+     * Given a name prefix, return users whose names contain a token 
+     * starting with that prefix, sorted by popularity (likedByCount, descending)
+     * 
+     * This is used while the user is still typing, before final search.
+     */
+    public ArrayList<People> autocompleteByPopularity(String prefix){
+        ArrayList<People> result = new ArrayList<>();
+        if(prefix == null) return result;
+
+        String normalized = prefix.toLowerCase();
+
+        //Collect all matched names
+        ArrayList<People> candidates = new ArrayList<>();
+        for(People p: getAllPeople()){
+            String name = p.getName();
+            if(name == null) continue;
+            if(matchesNameToken(name, normalized)){
+                candidates.add(p);
+            }
+        }
+
+        // Sort by popularity: likedByCount descending
+        candidates.sort((a,b) -> Integer.compare(b.getLikedByCount(), a.getLikedByCount()));
+
+        result.addAll(candidates);
+        return result;
+    }
+
+    /**
+     * Full search:
+     * Given the current user's email and a name query (which might still be partial)
+     * find all matching users and rank them by MBTI compatibility score
+     * (higher is better), then by popularity as a tiebreaker.
+     * 
+     * This is used after the user finishes typing and clicks "Search".
+     */
+    public ArrayList<People> searchByNameRankedByMbti(String nameQuery, String currentUserEmail){
+        ArrayList<People> result = new ArrayList<>();
+        People currentUser = get(currentUserEmail);
+
+        if(currentUser == null || nameQuery == null){
+            return result;
+        }
+
+        String normalized = nameQuery.toLowerCase();
+        ArrayList<SearchCandidate> candidates = new ArrayList<>();
+
+        for(People p: getAllPeople()){
+            //Skip self
+            if(p == currentUser) continue;
+
+            String name = p.getName();
+            if(name == null) continue;
+
+            if(matchesNameToken(name, normalized)){
+                double mbtiScore = computeMbtiMatchScorePlaceholder(currentUser, p);
+                int popularity = p.getLikedByCount()candidates.add(new SearchCandidate(p, mbtiScore, popularity));
+
+        
+            }
+
+            //Sort by MBTI score (desc), then popularity (desc)
+            candidates.sort((a,b) -> {
+                int cmp = Double.compare(b.mbtiScore, a.mbtiScore);
+                if(cmp != 0) return cmp;
+                return Integer.compare(b.popularity, a.popularity);
+            });
+
+            for(SearchCandidate c: candidates){
+                result.add(c.person);
+            }
+
+            return result;
+        }
+    }
+
+    private static class SearchCandidate{
+        People person;
+        double mbtiScore;
+        int popularity;
+
+        SearchCandidate(People person, double mbtiScore, int popularity){
+            this.person = person;
+            this.mbtiScore = mbtiScore;
+            this.popularity = popularity;
+        }
+    }
+
+
 }

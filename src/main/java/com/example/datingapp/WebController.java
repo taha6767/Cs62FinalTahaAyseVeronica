@@ -8,6 +8,14 @@ import java.util.*;
  * @author Taha
  */
 
+/**
+ * New Features:
+ * -/api/autocomplete endpoint for live name suggestions ranked by popularity
+ * -/api/search endpoint for full search results ranked by MBTI compatibility
+ * 
+ * @author Veronica
+ */
+
 @RestController
 @CrossOrigin(origins = "*") 
 public class WebController {
@@ -168,5 +176,35 @@ public class WebController {
         public String sourceEmail;
         public String targetEmail;
         public String type; 
+    }
+
+    /**
+     * Autocomplete endpoint
+     * While the user is typing a name prefix, this returns suggestions sorted
+     * by popularity (how many people like them).
+     */
+
+    @GetMapping("/api/autocomplete")
+    public List<PeopleDto> autocomplete(@RequestParam String prefix){
+        List<PeopleDto> displayList = new ArrayList<>();
+
+        ArrayList<People> matches = database.autocompleteByPopularity(prefix);
+        for(People p: matches){
+            displayList.add(new PeopleDto(p));
+        }
+
+        return displayList;
+    }
+
+    @GetMapping("/api/search")
+    public List<PeopleDto> search(@RequestParam String email, @RequestParam String name){
+        List<PeopleDto> displayList = new ArrayList<>();
+
+        ArrayList<People> matches = database.searchByNameRankedByMbti(name, email);
+        for(People p: matches){
+            displayList.add(new PeopleDto(p));
+        }
+
+        return displayList;
     }
 }
