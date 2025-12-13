@@ -35,17 +35,10 @@ Server runs at: http://localhost:8080
 
 
 
+> **CSV location:** `WebController` loads `userTest.csv` and `relationshipsTest.csv` using relative paths. Keep those CSVs in the project root. UserTest has less than 20 entries so it's easier to use in test runs. The whole 1000 data points 
+is in users.csv and relationshipsNew.csv so in `WebController` you can choose to load them instead.
 
 
-
-> **CSV location:** `WebController` loads `userTest.csv` and `relationshipsTest.csv` using relative paths. Keep those CSVs in the project root.
-
-### Option B: Run backend-only tests (no server)
-
-FILL THIS OUT
-```
-
----
 
 # Public API (Java classes)
 
