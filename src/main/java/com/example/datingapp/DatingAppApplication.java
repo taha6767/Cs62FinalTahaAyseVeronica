@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * main entry point for the spring boot application that runs the server
- * @author Taha
+ * @author Taha and LLM
  */
 @SpringBootApplication
 public class DatingAppApplication {
