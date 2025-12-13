@@ -178,25 +178,39 @@ public class WebController {
         return displayList;
     }
 
-    static class PeopleDto {
+static class PeopleDto {
         public String name;
         public String email;
         public String mbti;
         public List<Integer> stats;
+        public int likedByCount;
+        
+        // NEW: Fields to visualize gender
+        public String gender;
+        public String genderPreferences; 
+
+        // Private lists (only for admin/self)
         public List<String> likedEmails;
         public List<String> friendEmails;
-        public int likedByCount;
-        public String gender;
-        public List<String> genderPreferences;
 
         public PeopleDto(People p, boolean includePrivateLists) {
             this.name = p.getName();
             this.email = p.getEmail();
             this.mbti = p.getMbtiRaw();
             this.stats = p.getMbtiStats();
-            this.gender = p.getGender();
-            this.genderPreferences = p.getGenderPreferences();
             this.likedByCount = p.getLikedByCount();
+
+            // 1. Get the gender directly
+            this.gender = p.getGender();
+
+            // 2. Convert the preferences list (["men", "women"]) into a clean String ("men, women")
+            List<String> prefs = p.getGenderPreferences();
+            if (prefs != null && !prefs.isEmpty()) {
+                this.genderPreferences = String.join(", ", prefs);
+            } else {
+                this.genderPreferences = "All / Unspecified";
+            }
+
             if (includePrivateLists) {
                 this.likedEmails = p.getLikedEmails();
                 this.friendEmails = p.getFriendEmails();
