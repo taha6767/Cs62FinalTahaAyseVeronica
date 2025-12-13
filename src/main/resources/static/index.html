@@ -5,7 +5,7 @@
     <title>Dating App</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f4f4f9; color: #333; }
-        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .container { max-width: 1400px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h1 { text-align: center; color: #444; }
         h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; color: #555; }
         .section { margin-bottom: 30px; padding: 20px; border: 1px solid #eee; border-radius: 8px; background-color: #fff; }
@@ -13,7 +13,6 @@
         label { font-weight: bold; margin-top: 10px; display: block; }
         input[type="text"] { padding: 10px; margin: 8px 0 15px 0; width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
 
-        /* CHECKBOX STYLES */
         .checkbox-group { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
         .checkbox-label { font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
@@ -26,9 +25,9 @@
         .btn-cyan { background-color: #17a2b8; color: white; }
         .btn-yellow { background-color: #ffc107; color: black; font-weight: bold; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; vertical-align: top; }
-        th { background-color: #f8f9fa; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; table-layout: fixed; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; word-wrap: break-word; }
+        th { background-color: #f8f9fa; font-weight: bold; font-size: 12px; }
         
         .autocomplete-list { margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; max-height: 180px; overflow-y: auto; background-color: #fff; }
         .autocomplete-item { padding: 8px 10px; cursor: pointer; border-bottom: 1px solid #f1f1f1; }
@@ -41,6 +40,9 @@
         .hidden { display: none !important; }
         .action-bar { display: flex; gap: 10px; margin-top: 10px; align-items: center; }
         .selected-user-msg { font-size: 0.9em; color: #28a745; display: none; margin-left: 10px; font-weight: bold; }
+        
+        .vector-text { font-family: monospace; font-size: 0.85em; color: #555; }
+        .list-text { font-size: 0.85em; color: #666; max-height: 60px; overflow-y: auto; display: block; }
     </style>
 </head>
 <body>
@@ -85,7 +87,6 @@
     </div>
 
     <div id="userFlowWrapper" class="hidden">
-        
         <div class="section">
             <h2>Search & Interact</h2>
             <p>Start typing a name to find someone. Select them to Like or Friend.</p>
@@ -97,10 +98,6 @@
                 <button onclick="interactFromSearch('friend')" class="btn-cyan" style="flex: 1;">Friend 🤝</button>
             </div>
             <span id="selectionStatus" class="selected-user-msg">Selected: None</span>
-            <table id="searchResultsTable" style="margin-top: 15px; display: none;">
-                <thead><tr><th>Name</th><th>Email</th><th>MBTI</th><th>Popularity</th><th>Action</th></tr></thead>
-                <tbody></tbody>
-            </table>
         </div>
 
         <div class="section">
@@ -136,19 +133,12 @@
     <div class="section admin-only hidden">
         <h2>Database Visualization</h2>
         <button onclick="refreshTable()" class="btn-blue" style="margin-bottom: 10px;">🔄 Refresh Table</button>
-        <table id="dataTable">
-           <thead>
-    <tr>
-        <th>Name</th>
-        <th>MBTI</th>
-        <th>Gender</th>
-        <th>Preferences</th>
-        <th>Stats</th>
-        <th>Actions</th>
-    </tr>
-</thead>
-            <tbody></tbody>
-        </table>
+        <div style="overflow-x: auto;">
+            <table id="dataTable">
+               <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 
     <div class="section admin-only hidden" style="border: 2px solid #28a745;">
@@ -172,8 +162,6 @@
 
         const adminSections = document.querySelectorAll('.admin-only');
         const userWrapper = document.getElementById('userFlowWrapper');
-        
-        // Note: 'createSection' is no longer in adminSections, so it stays visible for both.
 
         if (mode === 'editor') {
             adminSections.forEach(el => el.classList.remove('hidden'));
@@ -187,31 +175,25 @@
         }
     }
 
-    // Helper to get checkbox values
     function getCheckedValues(containerId) {
         const checkboxes = document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`);
-        // Map to value and join with comma
         return Array.from(checkboxes).map(c => c.value).join(", ");
     }
 
     async function createUser() {
         const name = document.getElementById('newName').value.trim();
         const email = document.getElementById('newEmail').value.trim();
-        
-        // Collect checkbox values
         const gender = getCheckedValues('genderGroup');
         const genderPrefs = getCheckedValues('prefsGroup');
 
         if (!name || !email) return alert("Name and Email are required.");
-        if (!gender) return alert("Please select at least one Gender.");
-        if (!genderPrefs) return alert("Please select at least one Dating Preference.");
-
+        
         const data = {
             name: name,
             email: email,
             mbti: document.getElementById('newMbti').value,
-            gender: gender,        // Sends "Woman, Man" etc.
-            genderPrefs: genderPrefs // Sends "Woman, Man" etc.
+            gender: gender,
+            genderPrefs: genderPrefs 
         };
 
         try {
@@ -222,11 +204,8 @@
             });
             const resData = await response.json();
             alert(resData.message);
-            
-            // If in editor mode, refresh the table to show the new user
             if (currentMode === 'editor') refreshTable();
         } catch (e) {
-            console.error(e);
             alert("Error creating user");
         }
     }
@@ -257,10 +236,9 @@
             } else {
                 alert("Login Failed: " + data.message);
             }
-        } catch (error) { console.error(error); alert("Error connecting to server."); }
+        } catch (error) { alert("Error connecting to server."); }
     }
 
-    // --- SEARCH / INTERACT ---
     async function handleNameTyping() {
         document.getElementById('selectedTargetEmail').value = ""; 
         document.getElementById('selectionStatus').style.display = "none";
@@ -326,7 +304,7 @@
             resultDiv.innerHTML = `MATCH FOUND: <br> <b>${match.name}</b> (${match.mbti}) <br> ${match.email}`;
             resultDiv.style.color = "green";
             if (currentMode === 'editor') refreshGlobalMatches();
-        } catch (e) { console.error(e); alert("Error finding match."); }
+        } catch (e) { alert("Error finding match."); }
     }
 
     async function loadMyLists() {
@@ -361,28 +339,57 @@
 
             const response = await fetch(url);
             const data = await response.json();
+            
+            const thead = document.querySelector("#dataTable thead");
+            // FULLY UPDATED HEADERS: Friend Matches and Friends (Sent) are visible
+            thead.innerHTML = `
+                <tr>
+                    <th style="width: 100px;">Name</th>
+                    <th style="width: 120px;">Email</th>
+                    <th style="width: 50px;">MBTI</th>
+                    <th style="width: 60px;">Gender</th>
+                    <th style="width: 80px;">G-Prefs</th>
+                    <th style="width: 40px;" title="Liked By Count">Pop</th>
+                    <th style="width: 40px;" title="Valid Likes">Val</th>
+                    <th style="width: 90px;" title="Self Vector">SelfVec</th>
+                    <th style="width: 90px;" title="Preference Vector">PrefVec</th>
+                    <th style="width: 100px;">Likes (Sent)</th>
+                    <th style="width: 100px;">Friends (Sent)</th>
+                    <th style="width: 100px;">Match (Mutual)</th>
+                    <th style="width: 100px;">F-Match (Mutual)</th>
+                    <th style="width: 80px;">Actions</th>
+                </tr>
+            `;
+
             const tbody = document.querySelector("#dataTable tbody");
             tbody.innerHTML = "";
             
+            const formatVec = (v) => v ? `[${v.join(',')}]` : "[]";
+            const formatList = (l) => l && l.length > 0 ? l.join(", ") : "-";
+
             data.forEach(user => {
                 const row = document.createElement('tr');
-                
-                // 1. Name
-                // 2. MBTI
-                // 3. Gender (New)
-                // 4. Preferences (New)
-                // 5. Stats
-                // 6. Actions (Buttons)
-                
                 row.innerHTML = `
-                    <td>${user.name}</td>
+                    <td><b>${user.name}</b></td>
+                    <td style="font-size:0.85em; word-break:break-all;">${user.email}</td>
                     <td>${user.mbti}</td>
-                    <td>${user.gender || 'Not Specified'}</td>
-                    <td>${user.genderPreferences || 'All'}</td>
-                    <td>[${(user.stats||[]).join(', ')}]</td>
+                    <td>${user.gender || 'NA'}</td>
+                    <td style="font-size:0.85em;">${user.genderPreferences}</td>
+                    
+                    <td style="text-align:center;">${user.likedByCount}</td>
+                    <td style="text-align:center;">${user.validLikes}</td>
+                    
+                    <td class="vector-text">${formatVec(user.selfStats)}</td>
+                    <td class="vector-text">${formatVec(user.stats)}</td>
+                    
+                    <td class="list-text">${formatList(user.likedEmails)}</td>
+                    <td class="list-text" style="color:#17a2b8;">${formatList(user.friendEmails)}</td>
+                    <td class="list-text" style="background:#e8f5e9;">${formatList(user.matches)}</td>
+                    <td class="list-text" style="background:#e0f7fa;">${formatList(user.friendMatches)}</td>
+
                     <td>
-                        <button class="btn-pink" style="padding:5px 10px; font-size:12px;" onclick="interact('${user.email}', 'like')">Like</button>
-                        <button class="btn-cyan" style="padding:5px 10px; font-size:12px;" onclick="interact('${user.email}', 'friend')">Friend</button>
+                        <button class="btn-pink" style="padding:4px; font-size:11px; margin-bottom:2px;" onclick="interact('${user.email}', 'like')">Like</button>
+                        <button class="btn-cyan" style="padding:4px; font-size:11px;" onclick="interact('${user.email}', 'friend')">Friend</button>
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -390,7 +397,6 @@
         } catch (e) { console.log("Error loading table."); }
     }
 
-    // Helper function for the buttons inside the table
     async function interact(targetEmail, type) {
         if (!currentUser) return alert("Please login first.");
         if (!targetEmail) return alert("Error: User email missing.");
@@ -404,11 +410,13 @@
             });
             const resData = await response.json();
             alert(resData.message);
-            loadMyLists(); // Refresh your lists
+            loadMyLists();
+            if (currentMode === 'editor') refreshTable(); 
         } catch (e) { 
             alert("Interaction failed."); 
         }
     }
+
     async function refreshGlobalMatches() {
         try {
             const resp = await fetch(API_URL + "/admin/matches");

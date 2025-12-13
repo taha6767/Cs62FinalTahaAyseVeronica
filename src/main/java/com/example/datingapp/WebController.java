@@ -14,8 +14,9 @@ public class WebController {
         if (database == null) {
             database = new PeopleHashTable();
             try {
-                database.loadPeopleFromCSV("userTest.csv");
-                database.loadRelationships("relationshipsTest.csv");
+                // Adjust filename to match your upload
+                database.loadPeopleFromCSV("users.csv");
+                database.loadRelationships("relationshipsNew.csv");
                 System.out.println("Database loaded successfully!");
             } catch (Exception e) {
                 System.out.println("CSV files not found, starting empty.");
@@ -23,13 +24,11 @@ public class WebController {
         }
     }
 
-    // MODIFIED: Accepts isAdmin to show full lists for Editor Mode
     @GetMapping("/api/table")
     public List<PeopleDto> getTable(@RequestParam(required = false) String viewerEmail, 
                                     @RequestParam(defaultValue = "false") boolean isAdmin) {
         List<PeopleDto> displayList = new ArrayList<>();
         for (People p : database.getAllPeople()) {
-            // Show details if Admin OR if the viewer is looking at themselves
             boolean includeLists = isAdmin || (viewerEmail != null && viewerEmail.equalsIgnoreCase(p.getEmail()));
             displayList.add(new PeopleDto(p, includeLists));
         }
@@ -40,11 +39,9 @@ public class WebController {
     public Map<String, Object> login(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         People user = database.get(email);
-
         Map<String, Object> response = new HashMap<>();
         if (user != null) {
             response.put("status", "success");
-            response.put("message", "Login successful");
             response.put("user", new PeopleDto(user, true));
         } else {
             response.put("status", "error");
@@ -59,9 +56,7 @@ public class WebController {
         newPerson.setMbtiSelfType(request.mbti);
         if (request.gender != null) newPerson.setGender(request.gender);
         if (request.genderPrefs != null) newPerson.setGenderPreferencesFromString(request.genderPrefs);
-
         database.insert(newPerson);
-
         Map<String, Object> response = new HashMap<>();
         response.put("status", "success");
         response.put("message", "User created: " + request.name);
@@ -79,7 +74,7 @@ public class WebController {
             response.put("message", "One or both emails not found.");
             return response;
         }
-        if (request.sourceEmail != null && request.sourceEmail.equalsIgnoreCase(request.targetEmail)) {
+        if (source.getEmail().equalsIgnoreCase(target.getEmail())) {
             response.put("status", "error");
             response.put("message", "You cannot interact with yourself.");
             return response;
@@ -104,7 +99,6 @@ public class WebController {
             }
         } else {
             response.put("status", "error");
-            response.put("message", "Invalid interaction type.");
             return response;
         }
 
@@ -116,13 +110,10 @@ public class WebController {
     public PeopleDto findMatch(@RequestParam String email) {
         People me = database.get(email);
         People match = database.findMatch(email);
-        
         if (match != null) {
             if (me != null) {
                 String record = me.getName() + " (" + me.getMbtiRaw() + ") matched with " + match.getName() + " (" + match.getMbtiRaw() + ")";
-                if (!globalMatchHistory.contains(record)) {
-                    globalMatchHistory.add(record);
-                }
+                if (!globalMatchHistory.contains(record)) globalMatchHistory.add(record);
             }
             return new PeopleDto(match, false);
         }
@@ -130,9 +121,7 @@ public class WebController {
     }
 
     @GetMapping("/api/admin/matches")
-    public List<String> getGlobalMatchHistory() {
-        return globalMatchHistory;
-    }
+    public List<String> getGlobalMatchHistory() { return globalMatchHistory; }
 
     @GetMapping("/api/lists")
     public Map<String, Object> lists(@RequestParam String email) {
@@ -140,7 +129,6 @@ public class WebController {
         People me = database.get(email);
         if (me == null) {
             response.put("status", "error");
-            response.put("message", "Email not found");
             return response;
         }
         response.put("status", "success");
@@ -155,7 +143,6 @@ public class WebController {
         List<PeopleDto> out = new ArrayList<>();
         if (emails == null) return out;
         for (String e : emails) {
-            if (e == null) continue;
             People p = database.get(e);
             if (p != null) out.add(new PeopleDto(p, false));
         }
@@ -178,45 +165,50 @@ public class WebController {
         return displayList;
     }
 
-static class PeopleDto {
+    // --- DTO CLASS ---
+    static class PeopleDto {
         public String name;
         public String email;
-        public String mbti;
-        public List<Integer> stats;
-        public int likedByCount;
+        public String mbti; 
         
-        // NEW: Fields to visualize gender
+        public List<Integer> stats;     // Prefs
+        public List<Integer> selfStats; // Identity
+        public int likedByCount;        
+        public int validLikes;          
+
         public String gender;
         public String genderPreferences; 
 
-        // Private lists (only for admin/self)
+        // Lists
         public List<String> likedEmails;
         public List<String> friendEmails;
+        public List<String> matches;       // Romantic Matches
+        public List<String> friendMatches; // Friend Matches
 
         public PeopleDto(People p, boolean includePrivateLists) {
             this.name = p.getName();
             this.email = p.getEmail();
             this.mbti = p.getMbtiRaw();
+            
             this.stats = p.getMbtiStats();
+            this.selfStats = p.getMbtiSelfType();
             this.likedByCount = p.getLikedByCount();
+            this.validLikes = p.getValidLikes();
 
-            // 1. Get the gender directly
             this.gender = p.getGender();
-
-            // 2. Convert the preferences list (["men", "women"]) into a clean String ("men, women")
             List<String> prefs = p.getGenderPreferences();
-            if (prefs != null && !prefs.isEmpty()) {
-                this.genderPreferences = String.join(", ", prefs);
-            } else {
-                this.genderPreferences = "All / Unspecified";
-            }
+            this.genderPreferences = (prefs != null && !prefs.isEmpty()) ? String.join(", ", prefs) : "All";
 
             if (includePrivateLists) {
                 this.likedEmails = p.getLikedEmails();
                 this.friendEmails = p.getFriendEmails();
+                this.matches = p.getLikedEmailsMatch();
+                this.friendMatches = p.getFriendEmailsMatch();
             } else {
                 this.likedEmails = new ArrayList<>();
                 this.friendEmails = new ArrayList<>();
+                this.matches = new ArrayList<>();
+                this.friendMatches = new ArrayList<>();
             }
         }
     }
