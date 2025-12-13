@@ -1,437 +1,530 @@
-<!-- Author LLM -->
+<!-- Authored by LLM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Dating App</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f4f4f9; color: #333; }
-        .container { max-width: 1400px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #444; }
-        h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; color: #555; }
-        .section { margin-bottom: 30px; padding: 20px; border: 1px solid #eee; border-radius: 8px; background-color: #fff; }
+  <meta charset="UTF-8" />
+  <title>Dating App</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f4f4f9; color: #333; }
+    .container { max-width: 1400px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #444; }
+    h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; color: #555; }
+    .section { margin-bottom: 30px; padding: 20px; border: 1px solid #eee; border-radius: 8px; background-color: #fff; }
 
-        label { font-weight: bold; margin-top: 10px; display: block; }
-        input[type="text"] { padding: 10px; margin: 8px 0 15px 0; width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    label { font-weight: bold; margin-top: 10px; display: block; }
+    input[type="text"] { padding: 10px; margin: 8px 0 15px 0; width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
 
-        .checkbox-group { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
-        .checkbox-label { font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
+    .checkbox-group { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+    .checkbox-label { font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+    input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
 
-        button { padding: 12px; border: none; border-radius: 5px; width: 100%; cursor: pointer; font-size: 16px; transition: opacity 0.2s; }
-        button:hover { opacity: 0.9; }
-        .btn-green { background-color: #28a745; color: white; }
-        .btn-blue { background-color: #007bff; color: white; }
-        .btn-pink { background-color: #e83e8c; color: white; }
-        .btn-cyan { background-color: #17a2b8; color: white; }
-        .btn-yellow { background-color: #ffc107; color: black; font-weight: bold; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; table-layout: fixed; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; word-wrap: break-word; }
-        th { background-color: #f8f9fa; font-weight: bold; font-size: 12px; }
-        
-        .autocomplete-list { margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; max-height: 180px; overflow-y: auto; background-color: #fff; }
-        .autocomplete-item { padding: 8px 10px; cursor: pointer; border-bottom: 1px solid #f1f1f1; }
-        .autocomplete-item:hover { background-color: #f0f8ff; }
-        
-        .mode-switcher { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
-        .mode-btn { padding: 10px 20px; font-size: 18px; border-radius: 20px; cursor: pointer; border: 2px solid #ccc; background: #fff; }
-        .mode-btn.active { border-color: #007bff; background: #007bff; color: white; font-weight: bold; }
-        
-        .hidden { display: none !important; }
-        .action-bar { display: flex; gap: 10px; margin-top: 10px; align-items: center; }
-        .selected-user-msg { font-size: 0.9em; color: #28a745; display: none; margin-left: 10px; font-weight: bold; }
-        
-        .vector-text { font-family: monospace; font-size: 0.85em; color: #555; }
-        .list-text { font-size: 0.85em; color: #666; max-height: 60px; overflow-y: auto; display: block; }
-    </style>
+    button { padding: 12px; border: none; border-radius: 5px; width: 100%; cursor: pointer; font-size: 16px; transition: opacity 0.2s; }
+    button:hover { opacity: 0.9; }
+    .btn-green { background-color: #28a745; color: white; }
+    .btn-blue { background-color: #007bff; color: white; }
+    .btn-pink { background-color: #e83e8c; color: white; }
+    .btn-cyan { background-color: #17a2b8; color: white; }
+    .btn-yellow { background-color: #ffc107; color: black; font-weight: bold; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; table-layout: fixed; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; word-wrap: break-word; }
+    th { background-color: #f8f9fa; font-weight: bold; font-size: 12px; }
+
+    .autocomplete-list { margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; max-height: 180px; overflow-y: auto; background-color: #fff; }
+    .autocomplete-item { padding: 8px 10px; cursor: pointer; border-bottom: 1px solid #f1f1f1; }
+    .autocomplete-item:hover { background-color: #f0f8ff; }
+
+    .mode-switcher { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+    .mode-btn { padding: 10px 20px; font-size: 18px; border-radius: 20px; cursor: pointer; border: 2px solid #ccc; background: #fff; }
+    .mode-btn.active { border-color: #007bff; background: #007bff; color: white; font-weight: bold; }
+
+    .hidden { display: none !important; }
+    .action-bar { display: flex; gap: 10px; margin-top: 10px; align-items: center; }
+    .selected-user-msg { font-size: 0.9em; color: #28a745; display: none; margin-left: 10px; font-weight: bold; }
+
+    .vector-text { font-family: monospace; font-size: 0.85em; color: #555; }
+    .list-text { font-size: 0.85em; color: #666; max-height: 60px; overflow-y: auto; display: block; }
+    .status-msg { margin-top: 12px; padding: 10px; border-radius: 8px; border: 1px solid #eee; background: #fafafa; }
+  </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="mode-switcher">
-        <button id="btnUserMode" class="mode-btn active" onclick="setMode('user')">User View</button>
-        <button id="btnEditorMode" class="mode-btn" onclick="setMode('editor')">Editor View</button>
+  <div class="mode-switcher">
+    <button id="btnUserMode" class="mode-btn active" onclick="setMode('user')">User View</button>
+    <button id="btnEditorMode" class="mode-btn" onclick="setMode('editor')">Editor View</button>
+  </div>
+
+  <h1>💘 Hash Table Matchmaker</h1>
+
+  <div class="section" id="loginSection">
+    <h2>Login</h2>
+    <p>Enter an existing email to simulate being that user.</p>
+    <input type="text" id="loginEmail" placeholder="Enter email (e.g., example100007@hmc.edu)">
+    <button onclick="login()" class="btn-blue">Login</button>
+    <p style="margin-top: 15px;">Logged in as: <span id="currentUserDisplay">Not Logged In</span></p>
+  </div>
+
+  <div class="section" id="createSection">
+    <h2>Register / Create New Entry</h2>
+    <input type="text" id="newName" placeholder="Full Name">
+    <input type="text" id="newEmail" placeholder="Email">
+    <input type="text" id="newMbti" placeholder="MBTI (e.g., ENFP)">
+
+    <label>Gender (Select at least one)</label>
+    <div class="checkbox-group" id="genderGroup">
+      <label class="checkbox-label"><input type="checkbox" value="Woman"> Woman</label>
+      <label class="checkbox-label"><input type="checkbox" value="Man"> Man</label>
+      <label class="checkbox-label"><input type="checkbox" value="Non-binary"> Non-binary</label>
     </div>
 
-    <h1>💘 Hash Table Matchmaker</h1>
-
-    <div class="section" id="loginSection">
-        <h2>Login</h2>
-        <p>Enter an existing email to simulate being that user.</p>
-        <input type="text" id="loginEmail" placeholder="Enter email (e.g., example100007@hmc.edu)">
-        <button onclick="login()" class="btn-blue">Login</button>
-        <p style="margin-top: 15px;">Logged in as: <span id="currentUserDisplay">Not Logged In</span></p>
+    <label>Dating Preference (Select at least one)</label>
+    <div class="checkbox-group" id="prefsGroup">
+      <label class="checkbox-label"><input type="checkbox" value="Woman"> Woman</label>
+      <label class="checkbox-label"><input type="checkbox" value="Man"> Man</label>
+      <label class="checkbox-label"><input type="checkbox" value="Non-binary"> Non-binary</label>
     </div>
 
-    <div class="section" id="createSection">
-        <h2>Register / Create New Entry</h2>
-        <input type="text" id="newName" placeholder="Full Name">
-        <input type="text" id="newEmail" placeholder="Email">
-        <input type="text" id="newMbti" placeholder="MBTI (e.g., ENFP)">
-        
-        <label>Gender (Select at least one)</label>
-        <div class="checkbox-group" id="genderGroup">
-            <label class="checkbox-label"><input type="checkbox" value="Woman"> Woman</label>
-            <label class="checkbox-label"><input type="checkbox" value="Man"> Man</label>
-            <label class="checkbox-label"><input type="checkbox" value="Non-binary"> Non-binary</label>
-        </div>
+    <button onclick="createUser()" class="btn-green">Register User</button>
+  </div>
 
-        <label>Dating Preference (Select at least one)</label>
-        <div class="checkbox-group" id="prefsGroup">
-            <label class="checkbox-label"><input type="checkbox" value="Woman"> Woman</label>
-            <label class="checkbox-label"><input type="checkbox" value="Man"> Man</label>
-            <label class="checkbox-label"><input type="checkbox" value="Non-binary"> Non-binary</label>
-        </div>
+  <div id="userFlowWrapper" class="hidden">
+    <div class="section">
+      <h2>Search & Interact</h2>
+      <p>Start typing a name to find someone. Select them to Like or Friend.</p>
+      <input type="text" id="searchNameInput" placeholder="Type a name..." oninput="handleNameTyping()" autocomplete="off">
+      <input type="hidden" id="selectedTargetEmail">
+      <div id="autocompleteList" class="autocomplete-list"></div>
 
-        <button onclick="createUser()" class="btn-green">Register User</button>
+      <div class="action-bar">
+        <button onclick="interactFromSearch('like')" class="btn-pink" style="flex: 1;">Like ❤️</button>
+        <button onclick="interactFromSearch('friend')" class="btn-cyan" style="flex: 1;">Friend 🤝</button>
+      </div>
+      <span id="selectionStatus" class="selected-user-msg">Selected: None</span>
     </div>
 
-    <div id="userFlowWrapper" class="hidden">
-        <div class="section">
-            <h2>Search & Interact</h2>
-            <p>Start typing a name to find someone. Select them to Like or Friend.</p>
-            <input type="text" id="searchNameInput" placeholder="Type a name..." oninput="handleNameTyping()" autocomplete="off">
-            <input type="hidden" id="selectedTargetEmail">
-            <div id="autocompleteList" class="autocomplete-list"></div>
-            <div class="action-bar">
-                <button onclick="interactFromSearch('like')" class="btn-pink" style="flex: 1;">Like ❤️</button>
-                <button onclick="interactFromSearch('friend')" class="btn-cyan" style="flex: 1;">Friend 🤝</button>
-            </div>
-            <span id="selectionStatus" class="selected-user-msg">Selected: None</span>
-        </div>
-
-        <div class="section">
-            <h2>Find Match</h2>
-            <button onclick="findMatch()" class="btn-yellow">🔮 Find Me A Match</button>
-            <div id="matchResult" class="status-msg"></div>
-        </div>
-
-        <div class="section">
-            <h2>My Lists</h2>
-            <button onclick="loadMyLists()" class="btn-blue" style="margin-bottom: 10px;">🔄 Refresh My Lists</button>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px;">
-                    <h3 style="margin: 0 0 8px 0; color: #e83e8c;">❤️ Liked</h3>
-                    <ul id="myLikesList" style="margin: 0; padding-left: 18px;"></ul>
-                </div>
-                <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px;">
-                    <h3 style="margin: 0 0 8px 0; color: #17a2b8;">🤝 Friend-Liked</h3>
-                    <ul id="myFriendLikesList" style="margin: 0; padding-left: 18px;"></ul>
-                </div>
-                <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px;">
-                    <h3 style="margin: 0 0 8px 0; color: #28a745;">💘 Matches</h3>
-                    <ul id="myMatchesList" style="margin: 0; padding-left: 18px;"></ul>
-                </div>
-                <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px;">
-                    <h3 style="margin: 0 0 8px 0; color: #6c757d;">🧩 Friend Matches</h3>
-                    <ul id="myFriendMatchesList" style="margin: 0; padding-left: 18px;"></ul>
-                </div>
-            </div>
-        </div>
+    <div class="section">
+      <h2>Find Match</h2>
+      <button onclick="findMatch()" class="btn-yellow">🔮 Find Me A Match</button>
+      <div id="matchResult" class="status-msg"></div>
     </div>
 
-    <div class="section admin-only hidden">
-        <h2>Database Visualization</h2>
-        <button onclick="refreshTable()" class="btn-blue" style="margin-bottom: 10px;">🔄 Refresh Table</button>
-        <div style="overflow-x: auto;">
-            <table id="dataTable">
-               <thead></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
+    <div class="section">
+      <h2>My Lists</h2>
+      <button onclick="loadMyLists()" class="btn-blue" style="margin-bottom: 10px;">🔄 Refresh My Lists</button>
 
-    <div class="section admin-only hidden" style="border: 2px solid #28a745;">
-        <h2 style="color: #28a745;">💘 All Global Matches (History)</h2>
-        <button onclick="refreshGlobalMatches()" class="btn-green" style="margin-bottom: 10px;">🔄 Refresh History</button>
-        <ul id="globalMatchList" style="list-style: none; padding: 0;"></ul>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px;">
+          <h3 style="margin: 0 0 8px 0; color: #e83e8c;">❤️ Liked</h3>
+          <ul id="myLikesList" style="margin: 0; padding-left: 18px;"></ul>
+        </div>
+
+        <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px;">
+          <h3 style="margin: 0 0 8px 0; color: #17a2b8;">🤝 Friend-Liked</h3>
+          <ul id="myFriendLikesList" style="margin: 0; padding-left: 18px;"></ul>
+        </div>
+
+        <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px;">
+          <h3 style="margin: 0 0 8px 0; color: #28a745;">💘 Matches</h3>
+          <ul id="myMatchesList" style="margin: 0; padding-left: 18px;"></ul>
+        </div>
+
+        <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px;">
+          <h3 style="margin: 0 0 8px 0; color: #6c757d;">🧩 Friend Matches</h3>
+          <ul id="myFriendMatchesList" style="margin: 0; padding-left: 18px;"></ul>
+        </div>
+
+        <!-- NEW: Recommended list -->
+        <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px;">
+          <h3 style="margin: 0 0 8px 0; color: #ffc107;">⭐ Recommended</h3>
+          <ul id="myRecommendedList" style="margin: 0; padding-left: 18px;"></ul>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <div class="section admin-only hidden">
+    <h2>Database Visualization</h2>
+    <button onclick="refreshTable()" class="btn-blue" style="margin-bottom: 10px;">🔄 Refresh Table</button>
+    <div style="overflow-x: auto;">
+      <table id="dataTable">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section admin-only hidden" style="border: 2px solid #28a745;">
+    <h2 style="color: #28a745;">💘 All Global Matches (History)</h2>
+    <button onclick="refreshGlobalMatches()" class="btn-green" style="margin-bottom: 10px;">🔄 Refresh History</button>
+    <ul id="globalMatchList" style="list-style: none; padding: 0;"></ul>
+  </div>
 </div>
 
 <script>
-    let currentUser = "";
-    let currentMode = 'user'; 
-    const API_URL = window.location.origin + "/api";
+  let currentUser = "";
+  let currentMode = "user";
+  const API_URL = window.location.origin + "/api";
 
-    setMode('user');
+  setMode("user");
 
-    function setMode(mode) {
-        currentMode = mode;
-        document.getElementById('btnUserMode').className = mode === 'user' ? 'mode-btn active' : 'mode-btn';
-        document.getElementById('btnEditorMode').className = mode === 'editor' ? 'mode-btn active' : 'mode-btn';
+  function setMode(mode) {
+    currentMode = mode;
 
-        const adminSections = document.querySelectorAll('.admin-only');
-        const userWrapper = document.getElementById('userFlowWrapper');
+    document.getElementById("btnUserMode").className = mode === "user" ? "mode-btn active" : "mode-btn";
+    document.getElementById("btnEditorMode").className = mode === "editor" ? "mode-btn active" : "mode-btn";
 
-        if (mode === 'editor') {
-            adminSections.forEach(el => el.classList.remove('hidden'));
-            userWrapper.classList.remove('hidden'); 
-            refreshTable();
-            refreshGlobalMatches();
-        } else {
-            adminSections.forEach(el => el.classList.add('hidden'));
-            if (currentUser) userWrapper.classList.remove('hidden');
-            else userWrapper.classList.add('hidden');
+    const adminSections = document.querySelectorAll(".admin-only");
+    const userWrapper = document.getElementById("userFlowWrapper");
+
+    if (mode === "editor") {
+      adminSections.forEach(el => el.classList.remove("hidden"));
+      userWrapper.classList.remove("hidden"); // show everything in editor mode
+      refreshTable();
+      refreshGlobalMatches();
+    } else {
+      adminSections.forEach(el => el.classList.add("hidden"));
+      if (currentUser) userWrapper.classList.remove("hidden");
+      else userWrapper.classList.add("hidden");
+    }
+  }
+
+  function getCheckedValues(containerId) {
+    const checkboxes = document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`);
+    return Array.from(checkboxes).map(c => c.value).join(", ");
+  }
+
+  async function createUser() {
+    const name = document.getElementById("newName").value.trim();
+    const email = document.getElementById("newEmail").value.trim();
+    const gender = getCheckedValues("genderGroup");
+    const genderPrefs = getCheckedValues("prefsGroup");
+
+    if (!name || !email) return alert("Name and Email are required.");
+
+    const data = {
+      name: name,
+      email: email,
+      mbti: document.getElementById("newMbti").value,
+      gender: gender,
+      genderPrefs: genderPrefs
+    };
+
+    try {
+      const response = await fetch(API_URL + "/register", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
+      const resData = await response.json();
+      alert(resData.message || "User created!");
+      if (currentMode === "editor") refreshTable();
+    } catch (e) {
+      alert("Error creating user");
+    }
+  }
+
+  async function login() {
+    const emailInput = document.getElementById("loginEmail").value.trim();
+    if (!emailInput) return alert("Please enter an email.");
+
+    try {
+      const response = await fetch(API_URL + "/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ email: emailInput })
+      });
+
+      const data = await response.json();
+
+      if (data.status === "success") {
+        currentUser = data.user.email;
+        document.getElementById("currentUserDisplay").innerText = currentUser;
+        document.getElementById("currentUserDisplay").style.color = "green";
+        alert("Login Successful: Welcome " + data.user.name);
+
+        document.getElementById("userFlowWrapper").classList.remove("hidden");
+        loadMyLists();
+
+        if (currentMode === "editor") {
+          refreshTable();
+          refreshGlobalMatches();
         }
+      } else {
+        alert("Login Failed: " + (data.message || "Unknown error"));
+      }
+    } catch (error) {
+      alert("Error connecting to server.");
+    }
+  }
+
+  async function handleNameTyping() {
+    document.getElementById("selectedTargetEmail").value = "";
+    document.getElementById("selectionStatus").style.display = "none";
+
+    const input = document.getElementById("searchNameInput").value.trim();
+    const listDiv = document.getElementById("autocompleteList");
+
+    if (!input) {
+      listDiv.innerHTML = "";
+      return;
     }
 
-    function getCheckedValues(containerId) {
-        const checkboxes = document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`);
-        return Array.from(checkboxes).map(c => c.value).join(", ");
+    try {
+      const resp = await fetch(API_URL + "/autocomplete?prefix=" + encodeURIComponent(input));
+      const suggestions = await resp.json();
+
+      let html = "";
+      suggestions.forEach(user => {
+        const safeName = (user.name || "").replace(/'/g, "\\'");
+        const safeEmail = (user.email || "").replace(/'/g, "\\'");
+        html += `<div class="autocomplete-item" onclick="selectUser('${safeName}', '${safeEmail}')">
+                  <b>${user.name}</b> <small>(${user.email})</small>
+                </div>`;
+      });
+      listDiv.innerHTML = html;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function selectUser(name, email) {
+    document.getElementById("searchNameInput").value = name;
+    document.getElementById("selectedTargetEmail").value = email;
+    document.getElementById("autocompleteList").innerHTML = "";
+
+    const statusEl = document.getElementById("selectionStatus");
+    statusEl.innerText = "Selected: " + name;
+    statusEl.style.display = "inline-block";
+  }
+
+  async function interactFromSearch(type) {
+    if (!currentUser) return alert("Please login first.");
+
+    const targetEmail = document.getElementById("selectedTargetEmail").value;
+    if (!targetEmail) return alert("Please select a user first.");
+
+    const data = { sourceEmail: currentUser, targetEmail: targetEmail, type: type };
+
+    try {
+      const response = await fetch(API_URL + "/interact", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
+
+      const resData = await response.json();
+
+      if (resData.status === "success") {
+        alert(resData.message || "Success!");
+        loadMyLists();
+
+        if (currentMode === "editor") refreshTable();
+
+        document.getElementById("searchNameInput").value = "";
+        document.getElementById("selectedTargetEmail").value = "";
+        document.getElementById("selectionStatus").style.display = "none";
+      } else {
+        alert("Error: " + (resData.message || "Unknown error"));
+      }
+    } catch (e) {
+      alert("Interaction failed.");
+    }
+  }
+
+  async function findMatch() {
+    if (!currentUser) return alert("Please login first!");
+
+    try {
+      const response = await fetch(API_URL + "/match?email=" + encodeURIComponent(currentUser));
+      const text = await response.text();
+
+      const resultDiv = document.getElementById("matchResult");
+
+      if (!text) {
+        resultDiv.innerHTML = "No new match found yet.";
+        resultDiv.style.color = "red";
+        return;
+      }
+
+      const match = JSON.parse(text);
+
+      if (!match) {
+        resultDiv.innerHTML = "No new match found yet.";
+        resultDiv.style.color = "red";
+        return;
+      }
+
+      resultDiv.innerHTML = `MATCH FOUND:<br><b>${match.name}</b> (${match.mbti})<br>${match.email}`;
+      resultDiv.style.color = "green";
+
+      // Recommended match should show up in lists after this (if backend stores it)
+      loadMyLists();
+
+      if (currentMode === "editor") refreshGlobalMatches();
+    } catch (e) {
+      alert("Error finding match.");
+    }
+  }
+
+  async function loadMyLists() {
+    if (!currentUser) return;
+
+    try {
+      const resp = await fetch(API_URL + "/lists?email=" + encodeURIComponent(currentUser));
+      const data = await resp.json();
+
+      if (data.status === "success") {
+        renderPeopleList(document.getElementById("myLikesList"), data.liked);
+        renderPeopleList(document.getElementById("myFriendLikesList"), data.friendLiked);
+        renderPeopleList(document.getElementById("myMatchesList"), data.matches);
+        renderPeopleList(document.getElementById("myFriendMatchesList"), data.friendMatches);
+        renderPeopleList(document.getElementById("myRecommendedList"), data.recommended); // NEW
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function renderPeopleList(ulEl, list) {
+    ulEl.innerHTML = "";
+
+    if (!list || list.length === 0) {
+      ulEl.innerHTML = "<li><span style='color:#999'>None</span></li>";
+      return;
     }
 
-    async function createUser() {
-        const name = document.getElementById('newName').value.trim();
-        const email = document.getElementById('newEmail').value.trim();
-        const gender = getCheckedValues('genderGroup');
-        const genderPrefs = getCheckedValues('prefsGroup');
+    list.forEach(p => {
+      const li = document.createElement("li");
+      li.textContent = `${p.name} (${p.mbti})`;
+      ulEl.appendChild(li);
+    });
+  }
 
-        if (!name || !email) return alert("Name and Email are required.");
-        
-        const data = {
-            name: name,
-            email: email,
-            mbti: document.getElementById('newMbti').value,
-            gender: gender,
-            genderPrefs: genderPrefs 
-        };
+  async function refreshTable() {
+  try {
+    let url = API_URL + "/table";
 
-        try {
-            const response = await fetch(API_URL + "/register", {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
-            const resData = await response.json();
-            alert(resData.message);
-            if (currentMode === 'editor') refreshTable();
-        } catch (e) {
-            alert("Error creating user");
-        }
+    // Editor mode should see everyone's private lists
+    if (currentMode === "editor") {
+      url += "?isAdmin=true";
+    } else if (currentUser) {
+      url += "?viewerEmail=" + encodeURIComponent(currentUser);
     }
 
-    async function login() {
-        const emailInput = document.getElementById('loginEmail').value.trim();
-        if (!emailInput) return alert("Please enter an email.");
+    const response = await fetch(url);
+    const data = await response.json();
 
-        try {
-            const response = await fetch(API_URL + "/login", {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ email: emailInput })
-            });
-            const data = await response.json();
+    const thead = document.querySelector("#dataTable thead");
+    const tbody = document.querySelector("#dataTable tbody");
 
-            if (data.status === "success") {
-                currentUser = data.user.email;
-                document.getElementById('currentUserDisplay').innerText = currentUser;
-                document.getElementById('currentUserDisplay').style.color = "green";
-                alert("Login Successful: Welcome " + data.user.name);
-                document.getElementById('userFlowWrapper').classList.remove('hidden');
-                loadMyLists();
-                if (currentMode === 'editor') {
-                    refreshTable();
-                    refreshGlobalMatches();
-                }
-            } else {
-                alert("Login Failed: " + data.message);
-            }
-        } catch (error) { alert("Error connecting to server."); }
+    thead.innerHTML = "";
+    tbody.innerHTML = "";
+
+    // Build a quick lookup so we can display names instead of raw emails
+    const emailToName = {};
+    (data || []).forEach(u => {
+      if (u && u.email) emailToName[String(u.email).toLowerCase()] = u.name || u.email;
+    });
+
+    const formatVec = (v) => Array.isArray(v) ? `[${v.join(",")}]` : "[]";
+
+    const formatPeopleList = (emails) => {
+      if (!Array.isArray(emails) || emails.length === 0) return "-";
+      return emails
+        .map(e => {
+          const key = String(e || "").toLowerCase();
+          return emailToName[key] || e;
+        })
+        .join(", ");
+    };
+
+    // ✅ UPDATED HEADERS (removed People Friend-Liked only)
+    thead.innerHTML = `
+      <tr>
+        <th style="width: 110px;">Name</th>
+        <th style="width: 150px;">Email</th>
+        <th style="width: 55px;">MBTI</th>
+        <th style="width: 70px;">Gender</th>
+        <th style="width: 110px;">G-Prefs</th>
+        <th style="width: 45px;" title="Liked By Count">Pop</th>
+        <th style="width: 45px;" title="Valid Likes">Val</th>
+        <th style="width: 100px;" title="Self Vector">SelfVec</th>
+        <th style="width: 100px;" title="Preference Vector">PrefVec</th>
+        <th style="width: 200px;">People Liked</th>
+      </tr>
+    `;
+
+    (data || []).forEach(user => {
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td><b>${user.name || ""}</b></td>
+        <td style="font-size:0.85em; word-break:break-all;">${user.email || ""}</td>
+        <td>${user.mbti || ""}</td>
+        <td>${user.gender || "NA"}</td>
+        <td style="font-size:0.85em;">${user.genderPreferences || "All"}</td>
+
+        <td style="text-align:center;">${user.likedByCount ?? 0}</td>
+        <td style="text-align:center;">${user.validLikes ?? 0}</td>
+
+        <td class="vector-text">${formatVec(user.selfStats)}</td>
+        <td class="vector-text">${formatVec(user.stats)}</td>
+
+        <td class="list-text">${formatPeopleList(user.likedEmails)}</td>
+      `;
+
+      tbody.appendChild(row);
+    });
+  } catch (e) {
+    console.log("Error loading table.", e);
+  }
+}
+
+
+
+  async function interact(targetEmail, type) {
+    if (!currentUser) return alert("Please login first.");
+    if (!targetEmail) return alert("Error: User email missing.");
+
+    const data = { sourceEmail: currentUser, targetEmail: targetEmail, type: type };
+
+    try {
+      const response = await fetch(API_URL + "/interact", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
+
+      const resData = await response.json();
+      alert(resData.message || "Done!");
+
+      loadMyLists();
+      if (currentMode === "editor") refreshTable();
+    } catch (e) {
+      alert("Interaction failed.");
     }
+  }
 
-    async function handleNameTyping() {
-        document.getElementById('selectedTargetEmail').value = ""; 
-        document.getElementById('selectionStatus').style.display = "none";
-        
-        const input = document.getElementById('searchNameInput').value.trim();
-        const listDiv = document.getElementById('autocompleteList');
-        if (!input) { listDiv.innerHTML = ""; return; }
-        
-        try {
-            const resp = await fetch(API_URL + "/autocomplete?prefix=" + encodeURIComponent(input));
-            const suggestions = await resp.json();
-            let html = "";
-            suggestions.forEach(user => {
-                const safeName = (user.name || "").replace(/'/g, "\\'");
-                const safeEmail = (user.email || "").replace(/'/g, "\\'");
-                html += `<div class="autocomplete-item" onclick="selectUser('${safeName}', '${safeEmail}')"><b>${user.name}</b> <small>(${user.email})</small></div>`;
-            });
-            listDiv.innerHTML = html;
-        } catch (e) { console.error(e); }
+  async function refreshGlobalMatches() {
+    try {
+      const resp = await fetch(API_URL + "/admin/matches");
+      const list = await resp.json();
+
+      const ul = document.getElementById("globalMatchList");
+      ul.innerHTML = "";
+
+      (list || []).forEach(item => {
+        const li = document.createElement("li");
+        li.style.padding = "8px";
+        li.style.borderBottom = "1px solid #eee";
+        li.innerHTML = "🔥 " + item;
+        ul.appendChild(li);
+      });
+    } catch (e) {
+      console.error("Error fetching global matches", e);
     }
-
-    function selectUser(name, email) {
-        document.getElementById('searchNameInput').value = name;
-        document.getElementById('selectedTargetEmail').value = email;
-        document.getElementById('autocompleteList').innerHTML = "";
-        const statusEl = document.getElementById('selectionStatus');
-        statusEl.innerText = "Selected: " + name;
-        statusEl.style.display = "inline-block";
-    }
-
-    async function interactFromSearch(type) {
-        if (!currentUser) return alert("Please login first.");
-        const targetEmail = document.getElementById('selectedTargetEmail').value;
-        if (!targetEmail) return alert("Please select a user first.");
-
-        const data = { sourceEmail: currentUser, targetEmail: targetEmail, type: type };
-        try {
-            const response = await fetch(API_URL + "/interact", { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
-            const resData = await response.json();
-            if (resData.status === "success") {
-                alert(resData.message);
-                loadMyLists();
-                if (currentMode === 'editor') refreshTable();
-                document.getElementById('searchNameInput').value = "";
-                document.getElementById('selectedTargetEmail').value = "";
-                document.getElementById('selectionStatus').style.display = "none";
-            } else { alert("Error: " + resData.message); }
-        } catch (e) { alert("Interaction failed."); }
-    }
-
-    async function findMatch() {
-        if (!currentUser) return alert("Please login first!");
-        try {
-            const response = await fetch(API_URL + "/match?email=" + encodeURIComponent(currentUser));
-            const text = await response.text();
-            const resultDiv = document.getElementById('matchResult');
-            if (!text) {
-                resultDiv.innerHTML = "No new match found yet.";
-                resultDiv.style.color = "red";
-                return;
-            }
-            const match = JSON.parse(text);
-            resultDiv.innerHTML = `MATCH FOUND: <br> <b>${match.name}</b> (${match.mbti}) <br> ${match.email}`;
-            resultDiv.style.color = "green";
-            if (currentMode === 'editor') refreshGlobalMatches();
-        } catch (e) { alert("Error finding match."); }
-    }
-
-    async function loadMyLists() {
-        if (!currentUser) return;
-        try {
-            const resp = await fetch(API_URL + "/lists?email=" + encodeURIComponent(currentUser));
-            const data = await resp.json();
-            if (data.status === "success") {
-                renderPeopleList(document.getElementById('myLikesList'), data.liked);
-                renderPeopleList(document.getElementById('myFriendLikesList'), data.friendLiked);
-                renderPeopleList(document.getElementById('myMatchesList'), data.matches);
-                renderPeopleList(document.getElementById('myFriendMatchesList'), data.friendMatches);
-            }
-        } catch (e) { console.error(e); }
-    }
-
-    function renderPeopleList(ulEl, list) {
-        ulEl.innerHTML = "";
-        if (!list || list.length === 0) { ulEl.innerHTML = "<li><span style='color:#999'>None</span></li>"; return; }
-        list.forEach(p => {
-            const li = document.createElement('li');
-            li.textContent = `${p.name} (${p.mbti})`;
-            ulEl.appendChild(li);
-        });
-    }
-
-    async function refreshTable() {
-        try {
-            let url = API_URL + "/table";
-            if (currentMode === 'editor') url += "?isAdmin=true";
-            else if (currentUser) url += "?viewerEmail=" + encodeURIComponent(currentUser);
-
-            const response = await fetch(url);
-            const data = await response.json();
-            
-            const thead = document.querySelector("#dataTable thead");
-            // FULLY UPDATED HEADERS: Friend Matches and Friends (Sent) are visible
-            thead.innerHTML = `
-                <tr>
-                    <th style="width: 100px;">Name</th>
-                    <th style="width: 120px;">Email</th>
-                    <th style="width: 50px;">MBTI</th>
-                    <th style="width: 60px;">Gender</th>
-                    <th style="width: 80px;">G-Prefs</th>
-                    <th style="width: 40px;" title="Liked By Count">Pop</th>
-                    <th style="width: 40px;" title="Valid Likes">Val</th>
-                    <th style="width: 90px;" title="Self Vector">SelfVec</th>
-                    <th style="width: 90px;" title="Preference Vector">PrefVec</th>
-                    <th style="width: 100px;">Likes (Sent)</th>
-                    <th style="width: 100px;">Friends (Sent)</th>
-                    <th style="width: 100px;">Match (Mutual)</th>
-                    <th style="width: 100px;">F-Match (Mutual)</th>
-                    <th style="width: 80px;">Actions</th>
-                </tr>
-            `;
-
-            const tbody = document.querySelector("#dataTable tbody");
-            tbody.innerHTML = "";
-            
-            const formatVec = (v) => v ? `[${v.join(',')}]` : "[]";
-            const formatList = (l) => l && l.length > 0 ? l.join(", ") : "-";
-
-            data.forEach(user => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><b>${user.name}</b></td>
-                    <td style="font-size:0.85em; word-break:break-all;">${user.email}</td>
-                    <td>${user.mbti}</td>
-                    <td>${user.gender || 'NA'}</td>
-                    <td style="font-size:0.85em;">${user.genderPreferences}</td>
-                    
-                    <td style="text-align:center;">${user.likedByCount}</td>
-                    <td style="text-align:center;">${user.validLikes}</td>
-                    
-                    <td class="vector-text">${formatVec(user.selfStats)}</td>
-                    <td class="vector-text">${formatVec(user.stats)}</td>
-                    
-                    <td class="list-text">${formatList(user.likedEmails)}</td>
-                    <td class="list-text" style="color:#17a2b8;">${formatList(user.friendEmails)}</td>
-                    <td class="list-text" style="background:#e8f5e9;">${formatList(user.matches)}</td>
-                    <td class="list-text" style="background:#e0f7fa;">${formatList(user.friendMatches)}</td>
-
-                    <td>
-                        <button class="btn-pink" style="padding:4px; font-size:11px; margin-bottom:2px;" onclick="interact('${user.email}', 'like')">Like</button>
-                        <button class="btn-cyan" style="padding:4px; font-size:11px;" onclick="interact('${user.email}', 'friend')">Friend</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        } catch (e) { console.log("Error loading table."); }
-    }
-
-    async function interact(targetEmail, type) {
-        if (!currentUser) return alert("Please login first.");
-        if (!targetEmail) return alert("Error: User email missing.");
-
-        const data = { sourceEmail: currentUser, targetEmail: targetEmail, type: type };
-        try {
-            const response = await fetch(API_URL + "/interact", { 
-                method: 'POST', 
-                headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify(data)
-            });
-            const resData = await response.json();
-            alert(resData.message);
-            loadMyLists();
-            if (currentMode === 'editor') refreshTable(); 
-        } catch (e) { 
-            alert("Interaction failed."); 
-        }
-    }
-
-    async function refreshGlobalMatches() {
-        try {
-            const resp = await fetch(API_URL + "/admin/matches");
-            const list = await resp.json();
-            const ul = document.getElementById('globalMatchList');
-            ul.innerHTML = "";
-            list.forEach(item => {
-                const li = document.createElement('li');
-                li.style.padding = "8px"; li.style.borderBottom = "1px solid #eee";
-                li.innerHTML = "🔥 " + item;
-                ul.appendChild(li);
-            });
-        } catch (e) { console.error("Error fetching global matches"); }
-    }
+  }
 </script>
 
 </body>

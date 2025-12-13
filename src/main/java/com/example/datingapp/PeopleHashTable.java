@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 /**
  * this class so far handles the hash table logic for storing people and finding matches based on compatibility
- * @author Taha
+ * @author Taha and LLM at parts we didn't learn in class
  */
 
 /**
@@ -232,48 +232,101 @@ public class PeopleHashTable implements MatchDatabase {
         }
         return true;
     }
-    
-    // Helper for Csv File to Hash Table Making
+
     
     /**
-     * reads the csv file with user data and adds them to our hash table
-     * @param filename the path to the csv file
+     * Loads users from a CSV file and inserts them into the hash table.
+     * @param filename path to the CSV file to read
      */
     public void loadPeopleFromCSV(String filename) {
         String line;
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             br.readLine(); // Skip header
+
             while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
-                if(data.length < 4) continue;
 
-                String fullName = data[1].trim() + " " + data[2].trim();
-                String email = data[3].trim();
-                String mbti = (data.length > 4) ? data[4].trim() : "NA";
+                // can contain commas (ex: "Woman, Man")
+                ArrayList<String> cols = parseCsvLine(line);
 
-                String gender = (data.length > 5) ? data[5].trim() : "unspecified";
-                // join the rest back together
-                String prefsRaw = "";
-                if (data.length > 6) {
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 6; i < data.length; i++) {
-                        if (i > 6) sb.append(",");
-                        sb.append(data[i]);
-                    }
-                    prefsRaw = sb.toString();
-}
+                // combine first and last names
+                String fullName = safeGet(cols, 1) + " " + safeGet(cols, 2);
+                String email = safeGet(cols, 3);
+                String mbti = safeGet(cols, 4);
 
-                People p = new People(fullName, email);
-                
-                //Calculate and store the person's own type vector
-                p.setMbtiSelfType(mbti); 
+                // dataset columns 
+                String gender = safeGet(cols, 5);
+                String prefsRaw = safeGet(cols, 6);
 
+                // Create the People object and populate
+                People p = new People(fullName.trim(), email.trim());
+
+                //set mbti if it's non-empty
+                if (mbti != null && !mbti.isBlank()) {
+                    p.setMbtiSelfType(mbti.trim());
+                }
+
+                // Gender + genderPrefs are stored as strings parse
+                if (gender != null && !gender.isBlank()) {
+                    p.setGender(gender);
+                }
+                if (prefsRaw != null && !prefsRaw.isBlank()) {
+                    p.setGenderPreferencesFromString(prefsRaw);
+                }
+
+                // insert the person in hashtable
                 this.insert(p);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * handles gender and gender preferences with commas
+     * @param line one row of the CSV file
+     * @return ArrayList of column values for that row
+     */
+    private static ArrayList<String> parseCsvLine(String line) {
+        ArrayList<String> out = new ArrayList<>();
+        if (line == null) return out;
+
+        StringBuilder current = new StringBuilder();
+        boolean inQuotes = false;
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+
+            // inside quotes handle commas
+            if (c == '"') {
+                inQuotes = !inQuotes;
+                continue;
+            }
+
+            // treat commas as separators if we're not inside a quoted field
+            if (c == ',' && !inQuotes) {
+                out.add(current.toString().trim());
+                current.setLength(0);
+            } else {
+                current.append(c);
+            }
+        }
+
+        // add the final column
+        out.add(current.toString().trim());
+        return out;
+    }
+
+    /**
+     * reads a column from a parsed CSV row.
+     * @param cols parsed columns
+     * @param idx index to read
+     * @return the string at that index, or "" if not available
+     */
+    private static String safeGet(ArrayList<String> cols, int idx) {
+        if (cols == null || idx < 0 || idx >= cols.size()) return "";
+        return cols.get(idx) == null ? "" : cols.get(idx);
+    }
+
 
     /**
      * loads who likes who or who is friends from another csv
