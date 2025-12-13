@@ -73,15 +73,15 @@
 
     <label>Gender (Select at least one)</label>
     <div class="checkbox-group" id="genderGroup">
-      <label class="checkbox-label"><input type="checkbox" value="Woman"> Woman</label>
-      <label class="checkbox-label"><input type="checkbox" value="Man"> Man</label>
+      <label class="checkbox-label"><input type="checkbox" value="women"> Women</label>
+      <label class="checkbox-label"><input type="checkbox" value="men"> Men</label>
       <label class="checkbox-label"><input type="checkbox" value="Non-binary"> Non-binary</label>
     </div>
 
     <label>Dating Preference (Select at least one)</label>
     <div class="checkbox-group" id="prefsGroup">
-      <label class="checkbox-label"><input type="checkbox" value="Woman"> Woman</label>
-      <label class="checkbox-label"><input type="checkbox" value="Man"> Man</label>
+      <label class="checkbox-label"><input type="checkbox" value="women"> Women</label>
+      <label class="checkbox-label"><input type="checkbox" value="men"> Men</label>
       <label class="checkbox-label"><input type="checkbox" value="Non-binary"> Non-binary</label>
     </div>
 
@@ -451,12 +451,25 @@
         <th style="width: 45px;" title="Valid Likes">Val</th>
         <th style="width: 100px;" title="Self Vector">SelfVec</th>
         <th style="width: 100px;" title="Preference Vector">PrefVec</th>
-        <th style="width: 200px;">People Liked</th>
+        <th style="width: 250px;">Relations (Likes / Friends)</th>
       </tr>
     `;
 
     (data || []).forEach(user => {
       const row = document.createElement("tr");
+
+      // Helper to color-code lists
+      const formatColoredList = (emails, color, icon) => {
+        if (!Array.isArray(emails) || emails.length === 0) return "";
+        return emails.map(e => {
+            const key = String(e || "").toLowerCase();
+            const name = emailToName[key] || e; 
+            return `<div style="color: ${color}; font-weight: bold; font-size: 0.9em;">${icon} ${name}</div>`;
+        }).join("");
+      };
+
+      const likesHtml = formatColoredList(user.likedEmails, "#e83e8c", "❤️"); // Pink
+      const friendsHtml = formatColoredList(user.friendEmails, "#17a2b8", "🤝"); // Blue
 
       row.innerHTML = `
         <td><b>${user.name || ""}</b></td>
@@ -471,7 +484,11 @@
         <td class="vector-text">${formatVec(user.selfStats)}</td>
         <td class="vector-text">${formatVec(user.stats)}</td>
 
-        <td class="list-text">${formatPeopleList(user.likedEmails)}</td>
+        <td class="list-text" style="display:flex; flex-direction:column; gap:2px;">
+            ${likesHtml}
+            ${friendsHtml}
+            ${(!likesHtml && !friendsHtml) ? "<span style='color:#ccc'>-</span>" : ""}
+        </td>
       `;
 
       tbody.appendChild(row);

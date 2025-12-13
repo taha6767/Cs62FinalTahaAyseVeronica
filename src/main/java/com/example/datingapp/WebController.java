@@ -38,8 +38,8 @@ public class WebController {
 
         // The UI expects real data from users.csv / relationshipsNew.csv.
         // Working directory can vary in Spring Boot, so try a few common locations.
-        String usersPath = resolveCsvPath("users.csv");
-        String relPath = resolveCsvPath("relationshipsNew.csv");
+        String usersPath = resolveCsvPath("userTest.csv");
+        String relPath = resolveCsvPath("relationshipsTest.csv");
 
         try {
             database.loadPeopleFromCSV(usersPath);
