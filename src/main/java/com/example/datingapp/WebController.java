@@ -14,8 +14,8 @@ public class WebController {
         if (database == null) {
             database = new PeopleHashTable();
             try {
-                database.loadPeopleFromCSV("users.csv");
-                database.loadRelationships("relationshipsNew.csv");
+                database.loadPeopleFromCSV("userTest.csv");
+                database.loadRelationships("relationshipsTest.csv");
                 System.out.println("Database loaded successfully!");
             } catch (Exception e) {
                 System.out.println("CSV files not found, starting empty.");

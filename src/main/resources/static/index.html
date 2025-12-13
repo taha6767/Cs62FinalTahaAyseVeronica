@@ -363,20 +363,52 @@
             const data = await response.json();
             const tbody = document.querySelector("#dataTable tbody");
             tbody.innerHTML = "";
+            
             data.forEach(user => {
-                const isMe = currentUser && user.email === currentUser;
-                const isEditor = (currentMode === 'editor');
-                const showDetails = isMe || isEditor;
-
-                const likes = showDetails ? ((user.likedEmails||[]).join(', ') || '<span style="color:#ccc">None</span>') : '<span style="color:#ccc">Private</span>';
-                const friends = showDetails ? ((user.friendEmails||[]).join(', ') || '<span style="color:#ccc">None</span>') : '<span style="color:#ccc">Private</span>';
+                const row = document.createElement('tr');
                 
-                const row = `<tr><td>${user.name}</td><td>${user.email}</td><td>${user.mbti}</td><td>[${(user.stats||[]).join(', ')}]</td><td>${likes}</td><td>${friends}</td></tr>`;
-                tbody.innerHTML += row;
+                // 1. Name
+                // 2. MBTI
+                // 3. Gender (New)
+                // 4. Preferences (New)
+                // 5. Stats
+                // 6. Actions (Buttons)
+                
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td>${user.mbti}</td>
+                    <td>${user.gender || 'Not Specified'}</td>
+                    <td>${user.genderPreferences || 'All'}</td>
+                    <td>[${(user.stats||[]).join(', ')}]</td>
+                    <td>
+                        <button class="btn-pink" style="padding:5px 10px; font-size:12px;" onclick="interact('${user.email}', 'like')">Like</button>
+                        <button class="btn-cyan" style="padding:5px 10px; font-size:12px;" onclick="interact('${user.email}', 'friend')">Friend</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
             });
         } catch (e) { console.log("Error loading table."); }
     }
 
+    // Helper function for the buttons inside the table
+    async function interact(targetEmail, type) {
+        if (!currentUser) return alert("Please login first.");
+        if (!targetEmail) return alert("Error: User email missing.");
+
+        const data = { sourceEmail: currentUser, targetEmail: targetEmail, type: type };
+        try {
+            const response = await fetch(API_URL + "/interact", { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify(data)
+            });
+            const resData = await response.json();
+            alert(resData.message);
+            loadMyLists(); // Refresh your lists
+        } catch (e) { 
+            alert("Interaction failed."); 
+        }
+    }
     async function refreshGlobalMatches() {
         try {
             const resp = await fetch(API_URL + "/admin/matches");
