@@ -5,7 +5,7 @@ This project is a small “dating app” backend + web API that users can match 
 
 ### Features
 
-1. **Mutual-Like Matching**: Users can use this program to search for people that they like in real life and send them romantic or friendship likes. The other person cannot view that they have been liked, unless the feelings are mutual. When two users like eachother mutually in the same way(romantic or friendly), they are a match! They get notified that the feelings are mutual!
+1. **Mutual-Like Matching**: Users can use this program to search for people that they like in real life or want to be friends with and send them romantic or friendship likes. The other person cannot view that they have been liked, unless the feelings are mutual. When two users like eachother mutually in the same way(romantic or friendly), they are a match! They get notified that the feelings are mutual and they can take it from there.
 
 2. **Mutual-Like Matching**: The program tracks the MBTIs of the people users like to understand the user's "type". Based on that, the user can ask for the program to reccomend another user to them. The recommended user's "type" (what MBTI they like) is also tracked. So the program gives matching reccomandations based on mutual compatibility. 
 
@@ -21,18 +21,13 @@ This project uses Spring Boot (`org.springframework.boot.*`, `org.springframewor
 
 ## How to run
 
-### Option A: Run the web server (Spring Boot)
+### Run the web server (Spring Boot)
 
 From the repository root:
 
 **If your repo uses Maven (`pom.xml` present):**
 ```bash
 mvn spring-boot:run
-```
-
-**If your repo uses Gradle (build.gradle present):**
-```bash
-./gradlew bootRun
 ```
 
 Then you can call the API directly:
